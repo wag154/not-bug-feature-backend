@@ -6,7 +6,6 @@ class Kanban_board(db.Model):
     id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(30), nullable = False)
     categories = db.Column(db.String,nullable = True)
-
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
     id = db.Column(db.Integer,primary_key=True)
