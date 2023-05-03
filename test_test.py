@@ -30,7 +30,6 @@ def test_create_project ():
         "tech_stack" : "yes",
         "position" : "frontend,backend"
     })
-    resp = app.test_client().post("/project",json)
     assert resp.status_code == 200
 
 def test_get_project():
@@ -124,8 +123,27 @@ def test_calendar_card_change():
     assert resp.status_code == 200
 
 def test_project_member_created():
-    resp = app.test_client.post("/project/1&1",json ={
+    resp = app.test_client.post("/projectmember/1&1",json ={
         "level" : "2",
         "role" : "1"
     })
     assert resp.status_code == 200
+
+    resp2 = app.test_client.post("/projectmember/1&1",json ={
+        "levela" : "2",
+        "role" : "1"
+    })
+    assert resp2.status_code == 404
+
+def test_member_edit():
+    resp = app.test_client.put("/projectmember/1&1",json={
+        "level" = "2",
+        "role" = "2"
+    })
+    assert resp.status_code == 200
+    
+
+def test_member_remove():
+    resp = app.test_client.delete("/projectmember/1&1")
+    assert resp.status_code == 200
+
