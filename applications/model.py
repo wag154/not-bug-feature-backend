@@ -73,7 +73,6 @@ class Project(db.Model):
         self.number_of_collaborators = number_of_collaborators
         self.tech_stack = tech_stack
         self.positions = positions
-    
     def __repr__(self):
         return f"title: {self.title}\ndescription: {self.description}\nduration: {self.duration}\nnumber of collaborators: {self.number_of_collaborators}\ntech stack: {self.tech_stack}\npositions: {self.positions}"
 
