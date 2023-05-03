@@ -59,8 +59,6 @@ class Project(db.Model):
     number_of_collaborators = db.Column(db.Integer, nullable=False)
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
-
-
 class Announcement(db.Model):
     __tablename__ = "announcement"
 
