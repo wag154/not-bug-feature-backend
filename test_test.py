@@ -62,7 +62,7 @@ def test_create_kanban():
     assert resp.status_code == 200
 
 def test_create_kanban_task ():
-    resp = app.test_client().post("/kanban/1&1",{
+    resp = app.test_client().post("/kanban/1&1",json={
         "name": "hello world",
         "objective" :"print('hello world')",
         "category" : "hello world"

@@ -1,8 +1,6 @@
 from applications import db,app
 from datetime import datetime
 
-app.app_context().push()
-
 class Kanban_board(db.Model):
     __tablename__ = 'kanban_board'
     id = db.Column(db.Integer,primary_key = True)
@@ -37,17 +35,16 @@ class Creation_event(db.Model):
 
 
 class User(db.Model):
-    __tablename__ = "user"
+    __tablename__ = "user_account"
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True)
-    skill_level = db.Column(db.String(100), nullable=True)
-    skills = db.Column(db.String(500), nullable=True)
-    role = db.Column(db.String(100), nullable=True)
-
+    skill_level = db.Column(db.String(100), nullable=True, default = db.Integer)
+    skills = db.Column(db.String(500), nullable=True, default = "")
+    role = db.Column(db.String(100), nullable=True, default = "")
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -59,6 +56,8 @@ class Project(db.Model):
     number_of_collaborators = db.Column(db.Integer, nullable=False)
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
+    user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
+
 class Announcement(db.Model):
     __tablename__ = "announcement"
 
@@ -76,5 +75,5 @@ class ProjectMember(db.Model):
     level = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,db.ForeignKey('project.id'))
-    user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
 
