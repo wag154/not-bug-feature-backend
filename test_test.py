@@ -23,7 +23,7 @@ def test_increase_level():
     
 def test_create_project ():
     resp = app.test_client().post("/project",json={
-        "user_id"  : "1",
+        "user_id" : "1"
         "title" : "best project",
         "description" : "unequaled on earth!",
         "duration" : "7",
