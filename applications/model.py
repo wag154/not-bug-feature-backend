@@ -1,9 +1,11 @@
 from applications import db,app
 from datetime import datetime
 
+app.app_context().push()
+
 class Kanban_board(db.Model):
     __tablename__ = 'kanban_board'
-    id = db.Column(db.integer,primary_key = True)
+    id = db.Column(db.Integer,primary_key = True)
     name = db.Column(db.String(30), nullable = False)
     categories = db.Column(db.String,nullable = True)
 
@@ -11,9 +13,9 @@ class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(30),nullable = False)
-    category = db.Column(db.string,nullable = False)
-    objective = db.Column(db.string,nullable = False)
-    kanban_id = db.Column(db.Integer,db.ForeignKey('kanban_board'))
+    category = db.Column(db.String,nullable = False)
+    objective = db.Column(db.String,nullable = False)
+    kanban_id = db.Column(db.Integer,db.ForeignKey('kanban_board.id'))
 
 class Calendar(db.Model):
     __tablename__ = 'calendar'
@@ -46,14 +48,6 @@ class User(db.Model):
     skills = db.Column(db.String(500), nullable=True)
     role = db.Column(db.String(100), nullable=True)
 
-    def __init__(self, username, password, email):
-        self.username = username
-        self.password = password
-        self.email = email
-    
-    def __repr__(self):
-        return f"username: {self.username}\nemail: {self.email}\npassword: {self.password}"
-
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -66,17 +60,6 @@ class Project(db.Model):
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
 
-    def __init__(self, title, description, duration, number_of_collaborators, tech_stack, positions):
-        self.title = title
-        self.description = description
-        self.duration = duration
-        self.number_of_collaborators = number_of_collaborators
-        self.tech_stack = tech_stack
-        self.positions = positions
-    
-    def __repr__(self):
-        return f"title: {self.title}\ndescription: {self.description}\nduration: {self.duration}\nnumber of collaborators: {self.number_of_collaborators}\ntech stack: {self.tech_stack}\npositions: {self.positions}"
-
 
 class Announcement(db.Model):
     __tablename__ = "announcement"
@@ -86,15 +69,6 @@ class Announcement(db.Model):
     title = db.Column(db.String(100), nullable=False)
     message = db.Column(db.String(500), nullable=True, default='')
     pinned = db.Column(db.Boolean, server_default='t', default=False)
-
-    def __init__(self, username, title, message, pinned):
-        self.username = username
-        self.title = title
-        self.message = message
-        self.pinned = pinned
-
-    def __repr__(self):
-        return f"username: {self.username}\ntitle: {self.title}\nmessage: {self.message}\npinned: {self.pinned}"
 
 
 class ProjectMember(db.Model):
@@ -106,8 +80,3 @@ class ProjectMember(db.Model):
     project_id = db.Column(db.Integer,db.ForeignKey('project.id'))
     user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
 
-    def __init__(self, level, role):
-        self.level = level
-        self.role = role
-    
-    # Not returning a string representation for this model since it would require a join to make sense.
