@@ -1,5 +1,5 @@
 from applications import app,db
-from applications.model import Project,Kanban_board,Creation_event,ProjectMember
+from applications.model import Project,Kanban_board,Creation_event,ProjectMember,Kanban_task
 from flask import request
 import jsonify
 @app.route('/')
@@ -85,6 +85,7 @@ def add_teamMember (id):
         return {"message" : str(e)}
     finally:
         db.session.close()
+
 @app.route("/kanban/card/<int:id>")
 def create_card(id):
     try:
@@ -95,6 +96,13 @@ def create_card(id):
         kanban_id = id
         if not all ([name,category,objective,kanban_id]):
             raise ValueError("Missing field")
+        card = Kanban_task(name = name, categories = category,objective = objective,kanban_id = kanban_id)
+        
+        db.session.add(card)
+        db.session.commit()
+
+        return {"message" : "success!"}, 200
+    
     except Exception as e:
         return {"Message" : str(e)}
     finally:

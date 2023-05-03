@@ -33,7 +33,7 @@ class Creation_event(db.Model):
     kanban_id = db.Column(db.Integer,db.ForeignKey('kanban_board.id'))
 
 
-class User(db.Model):
+class user_account(db.Model):
     __tablename__ = "user_account"
 
     id = db.Column(db.Integer, primary_key=True)
