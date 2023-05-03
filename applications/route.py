@@ -86,7 +86,7 @@ def add_teamMember (id):
     finally:
         db.session.close()
 
-@app.route("/kanban/card/<int:id>")
+@app.route("/kanban/card/<int:id>",methods = ["POST"])
 def create_card(id):
     try:
         info = request.json
@@ -97,12 +97,24 @@ def create_card(id):
         if not all ([name,category,objective,kanban_id]):
             raise ValueError("Missing field")
         card = Kanban_task(name = name, categories = category,objective = objective,kanban_id = kanban_id)
-        
+
         db.session.add(card)
         db.session.commit()
 
         return {"message" : "success!"}, 200
     
+    except Exception as e:
+        return {"Message" : str(e)}
+    finally:
+        db.session.close()
+@app.route("/announcement/<int:id>",methods = ["POST"])
+def add_announcement(id):
+    try:
+        info = request.json
+        username = info.get("username")
+        title = info.get("title")
+        message = info.get("message")
+        pinned = (lambda a,b,c :a if (c == "true") else b )(True,False,info.get("pinned"))
     except Exception as e:
         return {"Message" : str(e)}
     finally:
