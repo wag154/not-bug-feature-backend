@@ -3,7 +3,6 @@ from datetime import datetime
 
 db = db.instance
 
-
 class Kanban_board(db.Model):
     __tablename__ = 'kanban_board'
     id = db.Column(db.Integer, primary_key=True)
@@ -18,7 +17,6 @@ class Kanban_task(db.Model):
     category = db.Column(db.String, nullable=False)
     objective = db.Column(db.String, nullable=False)
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
-
 
 class Calendar(db.Model):
     __tablename__ = 'calendar'
@@ -41,8 +39,8 @@ class Creation_event(db.Model):
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
 
 
-class User(db.Model):
-    __tablename__ = "user"
+class user_account(db.Model):
+    __tablename__ = "user_account"
 
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
@@ -50,16 +48,9 @@ class User(db.Model):
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True)
-    skill_level = db.Column(db.String(100), nullable=True)
-    skills = db.Column(db.String(500), nullable=True)
-    role = db.Column(db.String(100), nullable=True)
-
-    def __init__(self, username, password, email, public_id):
-        self.username = username
-        self.email = email
-        self.password = password
-        self.public_id = public_id
-
+    skill_level = db.Column(db.String(100), nullable=True, default = db.Integer)
+    skills = db.Column(db.String(500), nullable=True, default = "")
+    role = db.Column(db.String(100), nullable=True, default = "")
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -71,7 +62,7 @@ class Project(db.Model):
     number_of_collaborators = db.Column(db.Integer, nullable=False)
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
-
+    user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
 
 class Announcement(db.Model):
     __tablename__ = "announcement"
@@ -89,5 +80,6 @@ class ProjectMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String(100), nullable=False)
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    project_id = db.Column(db.Integer,db.ForeignKey('project.id'))
+    user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
+
