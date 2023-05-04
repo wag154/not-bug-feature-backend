@@ -56,8 +56,8 @@ def test_get_project_by_user():
 
 def test_create_kanban():
     resp = app.test_client().post("/kanban/1",json={
-        "name":"Test",
-        "category" : "hello world,goodbye world" 
+         "name":"Test",
+        "categories" : "hello world,goodbye world" 
     })
     assert resp.status_code == 200
 

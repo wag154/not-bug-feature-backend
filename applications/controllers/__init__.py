@@ -10,6 +10,7 @@ from applications.controllers.TeamMemberController.TeamMemberController import a
 api = Api(title='My API')
 
 
+
 api.add_namespace(user_controller, path='/user')
 api.add_namespace(default_controller,path="/yes")
 api.add_namespace(kanban_controller, path="/kanban")

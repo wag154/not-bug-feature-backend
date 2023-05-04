@@ -3,6 +3,7 @@ from applications.database import db
 from applications.model.model import Kanban_board,Creation_event, Kanban_task
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
+import jsonify
 
 api = Namespace('kanban', description='kanban operations')
 db = db.instance
@@ -12,16 +13,13 @@ db = db.instance
 class Kanban (Resource):
     def get (self,id):
         try :
-             project_id = id
-             get_kanban_id = Creation_event.query.filter_by(project_id = project_id).first()
-             all_tasks = Kanban_task.query.filter_by(kanban_id = get_kanban_id.kanban_id).all()
-
-             return {"success!":all_tasks}  
+            project_id = id
+            get_kanban_id = [ce.id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
+            return {"name":kanban.name, "categories" : kanban.categories}  
             
         except Exception as e:
             return {"message" :  str(e)}
-        finally:
-            db.session.close()
     def post (self,id):
          try:
             info = request.json
@@ -30,16 +28,14 @@ class Kanban (Resource):
             project_id = id
 
             if not all([name,categories]):
-                raise ValueError("Missing Fields")
-            
+                raise ValueError("Missing Fields")      
             kanban = Kanban_board(name = name, categories = categories)
             db.session.add(kanban)
             db.session.commit()
-            print(kanban.id, project_id)
+
             create = Creation_event(kanban_id=kanban.id, project_id = project_id)
             db.session.add(create)
             db.session.commit()
-            print(kanban.id)
             return {"kanban ID" : kanban.id} , 200
          
          except Exception as e:
@@ -100,10 +96,23 @@ class Kanban (Resource):
          finally:
              db.session.close()
 
-            
 @api.route("/task/<int:id>")
 @api.produces('application/json')
 class Task (Resource):
+    def get (self,id):
+        try :
+            kanban_id = id
+
+            all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
+                
+            print("This is list",all_tasks)
+            send_list =[task.to_dict() for task in all_tasks]
+            return {"All tasks":f"{send_list}"}, 200
+        
+        except Exception as e:
+            return {"message" :  str(e)}, 400
+        finally:
+            db.session.close()
     def post(self, id):
         try:
             info = request.json
@@ -118,7 +127,7 @@ class Task (Resource):
             db.session.add(new_Task)
             db.session.commit()
 
-            return {"list of info" : {new_Task.id, new_Task.name, new_Task.category} }, 200
+            return {"yes" : new_Task.id }, 200
         except Exception as e:
             return {"Message" : str(e)}, 404
         finally: 
@@ -156,7 +165,6 @@ class Task (Resource):
     def delete(self,id):
         try:
             kanban_id = id
-        
             remove_task = Kanban_task.query.filter_by(kanban_id=kanban_id).first()
             if not remove_task:
                 raise ValueError("Couldn't find value!")

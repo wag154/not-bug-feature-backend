@@ -18,6 +18,14 @@ class Kanban_task(db.Model):
     objective = db.Column(db.String, nullable=False)
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
 
+    def to_dict(self):
+        return {
+            'id' : self.id,
+            'name' :self.name,
+            "category" : self.category,
+            "objective" : self.objective,
+            "kanban_id" : self.kanban_id 
+        }
 class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)
