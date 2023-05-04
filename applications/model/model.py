@@ -18,7 +18,6 @@ class Kanban_task(db.Model):
     objective = db.Column(db.String, nullable=False)
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
 
-
 class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)
@@ -49,22 +48,9 @@ class user_account(db.Model):
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True)
-<<<<<<< HEAD:applications/model.py
     skill_level = db.Column(db.String(100), nullable=True, default = db.Integer)
     skills = db.Column(db.String(500), nullable=True, default = "")
     role = db.Column(db.String(100), nullable=True, default = "")
-=======
-    skill_level = db.Column(db.String(100), nullable=True)
-    skills = db.Column(db.String(500), nullable=True)
-    role = db.Column(db.String(100), nullable=True)
-
-    def __init__(self, username, password, email, public_id):
-        self.username = username
-        self.email = email
-        self.password = password
-        self.public_id = public_id
-
->>>>>>> origin/julia-auth:applications/model/model.py
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -94,11 +80,6 @@ class ProjectMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String(100), nullable=False)
-<<<<<<< HEAD:applications/model.py
     project_id = db.Column(db.Integer,db.ForeignKey('project.id'))
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
 
-=======
-    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
->>>>>>> origin/julia-auth:applications/model/model.py
