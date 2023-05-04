@@ -172,8 +172,8 @@ class Task (Resource):
             db.session.close() 
     def delete(self,id):
         try:
-            kanban_id = id
-            remove_task = Kanban_task.query.filter_by(kanban_id=kanban_id).first()
+            kanban_task_id = id
+            remove_task = Kanban_task.query.filter_by(id=kanban_task_id).first()
             if not remove_task:
                 raise ValueError("Couldn't find value!")
 

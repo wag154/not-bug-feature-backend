@@ -25,8 +25,11 @@ class TeamMember(Resource):
             db.session.add(new_member)
             db.session.commit()
 
-            new_creation_event = Creation_event(project_id = project_id,)
-
-            
+            new_creation_event = Creation_event(project_id = project_id,project_member_id = project_id)
+            db.session.add(new_creation_event)
+            db.session.commit()
+            return {"team_member_id" : "MESSAGE"}
         except Exception as e:
              return {"message" : str(e)}
+        finally :
+            db.session.close()
