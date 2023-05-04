@@ -1,49 +1,70 @@
-from applications import db,app
+from applications.database import db
 from datetime import datetime
+
+db = db.instance
 
 class Kanban_board(db.Model):
     __tablename__ = 'kanban_board'
-    id = db.Column(db.Integer,primary_key = True)
-    name = db.Column(db.String(30), nullable = False)
-    categories = db.Column(db.String,nullable = True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False)
+    categories = db.Column(db.String, nullable=True)
+
+
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
-    id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(30),nullable = False)
-    category = db.Column(db.String,nullable = False)
-    objective = db.Column(db.String,nullable = False)
-    kanban_id = db.Column(db.Integer,db.ForeignKey('kanban_board.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False)
+    category = db.Column(db.String, nullable=False)
+    objective = db.Column(db.String, nullable=False)
+    kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
+
 
 class Calendar(db.Model):
     __tablename__ = 'calendar'
-    id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String,nullable = False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+
 
 class Calendar_task(db.Model):
     __tablename__ = "calendar_task"
-    id = db.Column(db.Integer,primary_key=True)
-    name = db.Column(db.String(30),nullable = False)
-    due_date = db.Column(db.DateTime(), default = datetime.utcnow)
-    calendar_id = db.Column(db.Integer,db.ForeignKey('calendar.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(30), nullable=False)
+    due_date = db.Column(db.DateTime(), default=datetime.utcnow)
+    calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
+
 
 class Creation_event(db.Model):
     __tablename__ = "creation_event"
-    id = db.Column(db.Integer, primary_key = True)
+    id = db.Column(db.Integer, primary_key=True)
     calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
-    kanban_id = db.Column(db.Integer,db.ForeignKey('kanban_board.id'))
+    kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
 
 
 class user_account(db.Model):
     __tablename__ = "user_account"
 
     id = db.Column(db.Integer, primary_key=True)
+    public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True)
+<<<<<<< HEAD:applications/model.py
     skill_level = db.Column(db.String(100), nullable=True, default = db.Integer)
     skills = db.Column(db.String(500), nullable=True, default = "")
     role = db.Column(db.String(100), nullable=True, default = "")
+=======
+    skill_level = db.Column(db.String(100), nullable=True)
+    skills = db.Column(db.String(500), nullable=True)
+    role = db.Column(db.String(100), nullable=True)
+
+    def __init__(self, username, password, email, public_id):
+        self.username = username
+        self.email = email
+        self.password = password
+        self.public_id = public_id
+
+>>>>>>> origin/julia-auth:applications/model/model.py
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -73,6 +94,11 @@ class ProjectMember(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String(100), nullable=False)
+<<<<<<< HEAD:applications/model.py
     project_id = db.Column(db.Integer,db.ForeignKey('project.id'))
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
 
+=======
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+>>>>>>> origin/julia-auth:applications/model/model.py
