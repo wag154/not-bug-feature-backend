@@ -14,7 +14,7 @@ class user_account(db.Model):
     skill_level = db.Column(db.String(100), nullable=True, default = "")
     skills = db.Column(db.String(500), nullable=True, default = "")
     role = db.Column(db.String(100), nullable=True, default = "")
-    
+
 class ProjectMember(db.Model):
     __tablename__ = "projectmember"
     id = db.Column(db.Integer, primary_key=True)
@@ -33,9 +33,6 @@ class Project(db.Model):
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
-
-
-
 
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
