@@ -19,7 +19,7 @@ class Kanban (Resource):
             return {"name":kanban.name, "categories" : kanban.categories}  
             
         except Exception as e:
-            return {"message" :  str(e)}
+            return {"message" :  str(e)} 
     def post (self,id):
          try:
             info = request.json
@@ -52,22 +52,20 @@ class Kanban (Resource):
 
             if not all ([name,categories,project_id]):
                 raise ValueError ("Missing Field")
+            
             get_kanban = Creation_event.query.filter_by(project_id = id).first()
             if not get_kanban:
                 return {"message" : "cannot be found"}, 404
-            
-            edit_kanban = Kanban_board.query.get(get_kanban.kanban_id)
-            
+            edit_kanban = Kanban_board.query.filter_by(id = get_kanban.kanban_id).first()
+
             if not edit_kanban:
                 return {"message" : "unable to find kanban"}
             
-            edit_kanban.name, edit_kanban.categories,edit_kanban.project_id = name, categories,project_id   
-            print(edit_kanban)
-
-            db.session.add(edit_kanban)
+            edit_kanban.name = name
+            edit_kanban.categories = categories
             db.session.commit()
 
-            return {"Update successful!"}, 200
+            return {"message":"Update successful!"}, 200
         except ValueError as e:
             return {"message" : str(e)}
         
@@ -79,12 +77,23 @@ class Kanban (Resource):
     def delete(self, id):
          try:
             project_id = id
-        
+            
             get_kanban = Creation_event.query.filter_by(project_id = project_id).first()
             kanban = Kanban_board.query.get(get_kanban.kanban_id)
+
+            get_creation_event = Creation_event.query.filter_by(kanban_id = get_kanban.kanban_id).first()
+            db.session.delete(get_creation_event)
+            all_tasks = Kanban_task.query.filter_by(kanban_id = get_kanban.kanban_id).all()
+
+
+
+            for task in all_tasks:
+                print(task)
+                db.session.delete(task)
+                db.session.commit()
+            
             if not kanban:
               raise ValueError("Kanban board not found for project ID {}".format(project_id))
-
             db.session.delete(kanban)
             db.session.commit()
 
@@ -136,22 +145,21 @@ class Task (Resource):
        try :
             info = request.json
             name = info.get("name")
-            categories = info.get("categories")
+            categories = info.get("category")
             objective = info.get("objective")
-            kanban_id = id
+            kanban_task_id = id
 
-            if not all ([name,categories,objective,kanban_id]):
+            if not all ([name,categories,objective,kanban_task_id]):
                 raise ValueError ("Missing Field")
-            kanban_task =Kanban_task.query.get(kanban_id)
+          
+            kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
 
-            kanban_task.name,kanban_task.categories,kanban_task.objective, = name ,categories,objective
-
-            db.session.add(kanban_task)
+            kanban_task.name,kanban_task.category,kanban_task.objective = name ,categories,objective
             db.session.commit()
 
-            return {"Update successful!"}, 200
+            return {"message": "success!"}, 200
        
        except ValueError as e:
             return {"message" : str(e)}
