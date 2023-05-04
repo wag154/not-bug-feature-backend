@@ -1,25 +1,131 @@
 from applications import app,db
-from applications.model import Project
-from sqlalchemy import update,delete,insert
+from applications.model import Project,Kanban_board,Creation_event,ProjectMember,Kanban_task,Announcement
 from flask import request
+import jsonify
 @app.route('/')
 def hello():
     return 'hello', 200
 
-@app.route("/project", methods = ["POST"])
+@app.route("/project", methods=["POST"])
 def create_project():
-    info = request.json
-    try :
-        title = info["title"]
-        description = info["description"]
-        tech_stack = info["tech_stack"]
-        pos = info["position"]
+    try:
+        info = request.json
+        title = info.get("title")
+        description = info.get("description")
+        tech_stack = info.get("tech_stack")
+        positions = info.get("positions")
+        user_id = info.get("user_id")
+        duration = info.get("duration")
+        num_of_collaborators = info.get("number_of_collaborators")
 
-        new_project = Project(title,description,tech_stack,pos)
-
-        db.session.add(new_project)
+        if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators]):
+            raise ValueError("Missing fields")
+        
+        project = Project(
+            title=title,
+            description=description,
+            tech_stack=tech_stack,
+            positions=positions,
+            user_id=user_id,
+            duration=duration,
+            number_of_collaborators=int(num_of_collaborators)
+        )
+        print("here")
+        db.session.add(project)
         db.session.commit()
 
-        return 200
-    except:
-        return "check keynames",404
+        return {"Project ID": project.id}, 201
+    
+    except ValueError as e:
+        return {"message": str(e)}, 400
+
+    except Exception as e:
+        db.session.rollback()
+        return {"message": str(e)}, 500
+
+    finally:
+        db.session.close()
+
+@app.route("/kanban/<int:id>", methods = ["POST"])
+def create_kanban (id):
+    try:
+        info = request.json
+        name = info.get("name")
+        categories = info.get("categories")
+        if not all([name,categories]):
+            raise ValueError("Missing Fields")
+        kanban = Kanban_board(name = name, categories = categories)
+        db.session.add(kanban)
+        db.session.commit()
+        create = Creation_event(kanban_id=kanban.id)
+        db.session.add(create)
+        db.session.commit()
+        return {"kanban ID" : kanban.id} , 200
+    except Exception as e:
+        return {"message" : str(e)}
+        
+    finally:
+            db.session.close()
+@app.route("/teammember/<int:id>", methods = ["POST"])
+def add_teamMember (id):
+    try:
+        info = request.json
+        level = info.get("level")
+        role = info.get("role")
+        user_id = info.get("user_id")
+        project_id = id
+        if not all ([level,role,user_id,project_id]):
+            raise ValueError()
+        new_team_member = ProjectMember(level = level, role = role, user_id = user_id,project_id = project_id)
+        db.session.add(new_team_member)
+        db.session.commit()
+        return {"message":"success!"}, 200
+    except Exception as e:
+
+        return {"message" : str(e)}
+    finally:
+        db.session.close()
+
+@app.route("/kanban/card/<int:id>",methods = ["POST"])
+def create_card(id):
+    try:
+        info = request.json
+        name = info.get("name")
+        category = info.get("category")
+        objective = info.get("objective")
+        kanban_id = id
+        if not all ([name,category,objective,kanban_id]):
+            raise ValueError("Missing field")
+        card = Kanban_task(name = name, categories = category,objective = objective,kanban_id = kanban_id)
+
+        db.session.add(card)
+        db.session.commit()
+
+        return {"message" : "success!"}, 200
+    except Exception as e:
+        return {"Message" : str(e)}
+    finally:
+        db.session.close()
+@app.route("/announcement/<int:id>",methods = ["POST"])
+def add_announcement(id):
+    try:
+        info = request.json
+        username = info.get("username")
+        title = info.get("title")
+        message = info.get("message")
+        pinned = (lambda a,b,c :a if (c == "true") else b )(True,False,info.get("pinned"))
+
+        if not all ([username,title,message,pinned]):
+            ValueError("Missing Field")
+        
+        new_announcement = Announcement(username = username, title = title, message = message, pinned = pinned)
+
+        db.session.add(new_announcement)
+        db.session.commit()
+
+        return {"message" : "success!"}, 200
+    
+    except Exception as e:
+        return {"Message" : str(e)}
+    finally:
+        db.session.close()
