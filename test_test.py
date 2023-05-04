@@ -1,29 +1,28 @@
-from applications import app
+from applications import create_app
+from flask.testing import FlaskClient
 import pytest
-import requests
-import json
 
 @pytest.fixture()
 def test_app():
-    app.config.update({
-        "TESTING" : True,
-    })
-    return app.test_client()
+    app = create_app(env="TEST")
+    with app.test_client() as test_client:
+        yield test_client
 
-def test_default():
-    resp = app.test_client().get('/')
+def test_default(test_app):
+    resp = test_app().get('/')
     assert resp.status_code == 200
     assert resp.data.decode('utf-8') == 'hello'
 
 def test_increase_level():
-    resp = app.test_cl.post('/add',json={
+    resp = test_app.post('/add',json={
         "name": "hallo"
     })
     data = resp.data.decode('utf-8')
-    
+    assert resp.status_code == 200
+
 def test_create_project ():
-    resp = app.test_client().post("/project",json={
-        "user_id" : "1"
+    resp = test_app().post("/project",json={
+        "user_id" : "1",
         "title" : "best project",
         "description" : "unequaled on earth!",
         "duration" : "7",
@@ -129,16 +128,16 @@ def test_project_member_created():
     })
     assert resp.status_code == 200
 
-    resp2 = app.test_client.post("/projectmember/1&1",json ={
+    resp2 = test_app.post("/projectmember/1&1",json ={
         "levela" : "2",
         "role" : "1"
     })
     assert resp2.status_code == 404
 
 def test_member_edit():
-    resp = app.test_client.put("/projectmember/1&1",json={
-        "level" = "2",
-        "role" = "2"
+    resp = test_app.put("/projectmember/1&1", json={
+        "level": "2",
+        "role": "2"
     })
     assert resp.status_code == 200
     
@@ -146,6 +145,7 @@ def test_member_edit():
 def test_member_remove():
     resp = app.test_client.delete("/projectmember/1&1")
     assert resp.status_code == 200
+
 
 # from applications import app
 # import pytest

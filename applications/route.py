@@ -4,10 +4,11 @@ from flask import request
 import jsonify
 @app.route('/')
 def hello():
-    return 'hello', 200
+    print("hello")
+    return "hello world", 200
 
-@app.route("/project", methods=["POST"])
-def create_project():
+@app.route("/project")
+def post():
     try:
         info = request.json
         title = info.get("title")
@@ -30,7 +31,6 @@ def create_project():
             duration=duration,
             number_of_collaborators=int(num_of_collaborators)
         )
-        print("here")
         db.session.add(project)
         db.session.commit()
 
@@ -67,7 +67,7 @@ def create_kanban (id):
     finally:
             db.session.close()
 @app.route("/teammember/<int:id>", methods = ["POST"])
-def add_teamMember (id):
+def post (id):
     try:
         info = request.json
         level = info.get("level")
@@ -86,8 +86,8 @@ def add_teamMember (id):
     finally:
         db.session.close()
 
-@app.route("/kanban/card/<int:id>",methods = ["POST"])
-def create_card(id):
+@app.route("/kanban/card/<int:id>")
+def post(id):
     try:
         info = request.json
         name = info.get("name")
@@ -106,8 +106,8 @@ def create_card(id):
         return {"Message" : str(e)}
     finally:
         db.session.close()
-@app.route("/announcement/<int:id>",methods = ["POST"])
-def add_announcement(id):
+@app.route("/announcement/<int:id>")
+def post(id):
     try:
         info = request.json
         username = info.get("username")

@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from applications.model.model import User as UserModel
+from applications.model.model import user_account as UserModel
 from applications.database import db
 from werkzeug.security import generate_password_hash
 from flask_restx import Namespace, Resource
