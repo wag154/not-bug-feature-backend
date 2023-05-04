@@ -17,10 +17,10 @@ class Announcements (Resource):
            title = info.get("title")
            message = info.get("message")
            pinned = info.get("pinned")
-           if not all ([username,title,message]) and pinned != None or pinned == "":
+           if not all ([username,title,message,pinned]):
                raise ValueError("Missing field")
            
-           pinned = (lambda a,b,c :a if (c.lower() == "true") else b )(True,False,pinned)
+           pinned = (lambda a,b,c :a if (c == "true") else b )(True,False,pinned)
            new_announcement = Announcement(username = username, title = title,message = message,pinned = pinned)
            db.session.add(new_announcement)
            db.session.commit()
@@ -28,7 +28,9 @@ class Announcements (Resource):
            new_create_event = Creation_event(project_id = id, announcement_id = new_announcement.id)
            db.session.add(new_create_event)
            db.session.commit()
+
            return {"id": new_announcement.id},200
+        
         except Exception as e :
             return {"message" : str(e)},400
         finally:
@@ -46,7 +48,7 @@ class Announcements (Resource):
            if not all ([username,title,message]) and pinned != None or pinned == "":
                raise ValueError("Missing field")
            
-           pinned = (lambda a,b,c :a if (c.lower() == "true") else b )(True,False,pinned)
+           pinned = (lambda a,b,c :a if (c == "true") else b )(True,False,pinned)
            
            edit_announcement = Announcement.query.filter_by(id = announcement_id).first()
            
@@ -54,6 +56,24 @@ class Announcements (Resource):
            db.session.commit()
            return {"message" : "success"}
         
+        except Exception as e:
+            return {"message" : str(e)},400
+        finally:
+            db.session.close()
+
+    def delete (self,id):
+        try:
+            info = request.json
+            get_create_event = Creation_event.query.filter_by(announcement_id = id).first()
+            print(get_create_event)
+            db.session.delete(get_create_event)
+            db.session.commit()
+
+            remove_announcement = Announcement.query.filter_by(id = id).first()
+            db.session.delete(remove_announcement)
+            db.session.commit()
+        
+            return {"success", "message"}
         except Exception as e:
             return {"message" : str(e)},400
         finally:
