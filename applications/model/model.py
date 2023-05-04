@@ -22,6 +22,7 @@ class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
+    
 
 
 class Calendar_task(db.Model):
@@ -35,8 +36,9 @@ class Calendar_task(db.Model):
 class Creation_event(db.Model):
     __tablename__ = "creation_event"
     id = db.Column(db.Integer, primary_key=True)
-    calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
-    kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
+    calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'), nullable = True)
+    kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'),nullable = True)
+    project_id = db.Column(db.Integer,db.ForeignKey('project.id'),nullable = True)
 
 
 class user_account(db.Model):
@@ -48,7 +50,7 @@ class user_account(db.Model):
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
     name = db.Column(db.String(255), nullable=True)
-    skill_level = db.Column(db.String(100), nullable=True, default = db.Integer)
+    skill_level = db.Column(db.String(100), nullable=True, default = "")
     skills = db.Column(db.String(500), nullable=True, default = "")
     role = db.Column(db.String(100), nullable=True, default = "")
 

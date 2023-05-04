@@ -9,13 +9,13 @@ def test_app():
         yield test_client
 
 def test_default(test_app):
-    resp = test_app().get('/')
+    resp = test_app().get('/yes')
     assert resp.status_code == 200
     assert resp.data.decode('utf-8') == 'hello'
 
 def test_increase_level():
-    resp = test_app.post('/add',json={
-        "name": "hallo"
+    resp = test_app.post('/teammemeber/increase',json={
+        "id":"1"
     })
     data = resp.data.decode('utf-8')
     assert resp.status_code == 200
@@ -25,9 +25,10 @@ def test_create_project ():
         "user_id" : "1",
         "title" : "best project",
         "description" : "unequaled on earth!",
+        "number_of_collaborators" : "3",
         "duration" : "7",
         "tech_stack" : "yes",
-        "position" : "frontend,backend"
+        "positions" : "frontend,backend"
     })
     assert resp.status_code == 200
 

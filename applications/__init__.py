@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
 
-
 def create_app(env=None):
     app = Flask(__name__)
 
@@ -20,9 +19,8 @@ def create_app(env=None):
     from applications.database import db
     app.app_context().push()
     db.init_app(app)
-
     CORS(app)
-
+    
     from applications.controllers import api
     api.init_app(app)
 
