@@ -18,6 +18,7 @@ class user_account(db.Model):
 class ProjectMember(db.Model):
     __tablename__ = "projectmember"
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String,nullable = True)
     level = db.Column(db.Integer, nullable=False)
     role = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,db.ForeignKey('project.id',ondelete='CASCADE'), nullable =False )
@@ -32,7 +33,9 @@ class Project(db.Model):
     number_of_collaborators = db.Column(db.Integer, nullable=False)
     tech_stack = db.Column(db.String(500), nullable=False)
     positions = db.Column(db.String(500), nullable=False)
+    chatroom_key = db.Column(db.String, nullable = False)
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
+    url = db.Column(db.String,nullable = True)
 
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"

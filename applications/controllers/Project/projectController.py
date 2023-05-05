@@ -19,9 +19,10 @@ class project(Resource):
             positions = info.get("positions")
             user_id = info.get("user_id")
             duration = info.get("duration")
+            chatroom_key = info.get("chatroom_key")
             num_of_collaborators = info.get("number_of_collaborators")
 
-            if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators]):
+            if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators,chatroom_key]):
                 raise ValueError("Missing fields")
         
             project = Project(
@@ -31,12 +32,13 @@ class project(Resource):
             positions=positions,
             user_id=user_id,
             duration=duration,
-            number_of_collaborators=int(num_of_collaborators)
+            number_of_collaborators=int(num_of_collaborators),
+            chatroom_key = chatroom_key
         )
             db.session.add(project)
             db.session.commit()
 
-            return {"Project ID": project.id}, 201
+            return {"Project ID": project.id,"Chatroom_key" : chatroom_key}, 201
     
         except ValueError as e:
           return {"message": str(e)}, 400
@@ -76,7 +78,7 @@ class project(Resource):
             
     def delete(self,id):
         try:
-            
+
             remove_project = Project.query.filter_by(id = id).first()
             all_creation_event = Creation_event.query.filter_by(project_id = id).all()
             for event in all_creation_event:

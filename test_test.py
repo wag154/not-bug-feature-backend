@@ -21,6 +21,7 @@ class TestProject(TestCase):
             "number_of_collaborators" : "3",
             "duration" : "7",
             "tech_stack" : "yes",
+            "chatroom_key" : "123"
             "positions" : "frontend,backend"
         })
         assert resp.status_code == 201

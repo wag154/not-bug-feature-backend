@@ -10,15 +10,18 @@ db = db.instance
 @api.route("/<int:id>")
 @api.produces('application/json')
 class TeamMember(Resource):
+    def get (self):
+        pass
     def post (self,id):
         try:
             info = request.json
+            name = info.get("name")
             level = info.get("level")
             role = info.get("role")
             user_id = info.get("user_id")
             project_id = id
 
-            if not all ([level,role,user_id,project_id]):
+            if not all ([level,role,user_id,project_id,name]):
                 raise ValueError("Missing field")
             
             new_member = ProjectMember(level = level, role = role, user_id = user_id,project_id = project_id)
@@ -28,8 +31,9 @@ class TeamMember(Resource):
                 return {"Failed" : "user already is a member of this project!"}, 409
             
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
-
             db.session.add(new_member)
+            db.session.commit()
+            print("here")
             db.session.add(new_creation_event)
             db.session.commit()
             return {"team_member_id" : new_member.id}
