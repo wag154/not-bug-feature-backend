@@ -26,7 +26,7 @@ class project(Resource):
             info = request.json
             title = info.get("title")
             description = info.get("description")
-            tech_stack = info.get("tech_stack")
+            tech_stack = info.get("tech_sxtack")
             positions = info.get("positions")
             user_id = info.get("user_id")
             duration = info.get("duration")
