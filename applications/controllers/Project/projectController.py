@@ -10,6 +10,17 @@ db = db.instance
 @api.route('/<int:id>')
 @api.produces('application/json')
 class project(Resource):
+    def get (self,id):
+        try:
+
+            get_all_for_user = Project.query.filter_by(user_id = id).all()
+            print(get_all_for_user)
+            if not get_all_for_user:
+                raise ValueError("This User Current Has No Projects!")
+            
+            return {"message" : "yes"},200
+        except Exception as e:
+            return {"message" :str(e)},400
     def post(self,id):
         try:
             info = request.json

@@ -33,7 +33,6 @@ class TeamMember(Resource):
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
             db.session.add(new_member)
             db.session.commit()
-            print("here")
             db.session.add(new_creation_event)
             db.session.commit()
             return {"team_member_id" : new_member.id}

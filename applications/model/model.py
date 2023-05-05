@@ -37,6 +37,11 @@ class Project(db.Model):
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
     url = db.Column(db.String,nullable = True)
 
+    def to_dict(self):
+        return {
+            "id" : self.id,
+
+        }
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
     id = db.Column(db.Integer, primary_key=True)
