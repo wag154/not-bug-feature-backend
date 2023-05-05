@@ -89,14 +89,10 @@ class project(Resource):
         try:     
             remove_project = Project.query.filter_by(id = id).first()
             all_creation_event = Creation_event.query.filter_by(project_id = id).all()
-            for event in all_creation_event:
-                if event.kanban_id:
-                    print("kanban")
-                elif event.calendar_id:
-                    print("calendar")
-                elif event.project_member_id:
-                    print("project_member")
-                db.session.delete(event)
+            for i in all_creation_event:
+                
+                pass
+            db.session.delete(event)
             db.session.commit()
             db.session.delete(remove_project)
             db.session.commit()

@@ -14,8 +14,7 @@ class IncreaseMemberLevel(Resource):
         try:
             info = request.json
             get_member = ProjectMember.query.filter_by(id = id).first()
-            print("asd",get_member)
-            print(get_member.level)
+
             
             if info.get("level") is not None:
                  get_member.level = info.get("level")
@@ -61,7 +60,6 @@ class TeamMember(Resource):
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
             db.session.add(new_member)
             db.session.commit()
-            print("here")
             db.session.add(new_creation_event)
             db.session.commit()
             return {"team_member_id" : new_member.id}

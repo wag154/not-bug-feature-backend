@@ -21,12 +21,12 @@ class Calendars (Resource):
         
         except Exception as e:
             return {"message": str(e)},404
-
     def post(self,id):
        try:
-           test_id = Creation_event.query.filter_by(project_id = id).first()
-           if test_id:
-               return {"message": "calendar already exists"},409
+           test_id = Creation_event.query.filter_by(project_id = id).all()
+           for i in test_id:
+              if i and i.calendar_id:
+                 return {"message": "calendar already exists"},409
             
            new_calendar = Calendar()
            db.session.add(new_calendar)
