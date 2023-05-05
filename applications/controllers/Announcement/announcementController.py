@@ -10,6 +10,24 @@ db = db.instance
 @api.route("/<int:id>")
 @api.produces('application/json')
 class Announcements (Resource):
+    def get(self,id):
+        try:
+
+            project_id = id 
+            get_announcement_id = Creation_event.query.filter_by(project_id = project_id).all()
+            all_id = [i.id for i in get_announcement_id]
+            all_announcements = [Announcement.query.filter_by(id = id).all() for id in all_id]
+            if not all_announcements or all_announcements==None:
+                raise ValueError("Not announcements")
+            send_list = []
+            for i in all_announcements:
+                child = [a.to_dict() for a in i]
+                send_list.append(child)
+            return {"All Announcement" : f"{send_list}"}
+
+        except Exception as e:
+            return {"message": str(e)}
+
     def post (self,id):
         try:
            info = request.json

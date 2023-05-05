@@ -118,6 +118,7 @@ class Task (Resource):
             return {"message" :  str(e)}, 400
         finally:
             db.session.close()
+            
     def post(self, id):
         try:
             info = request.json

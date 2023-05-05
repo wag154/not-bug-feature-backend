@@ -1,5 +1,6 @@
 .idea
 venv
+.env
 applications/__pycache__
 applications/model/__pycache__
 applications/controllers/__pycache__

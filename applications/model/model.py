@@ -78,6 +78,14 @@ class Announcement(db.Model):
     message = db.Column(db.String(500), nullable=True, default='')
     pinned = db.Column(db.Boolean, server_default='t', default=False)
 
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "username" : self.username,
+            "title" : self.title,
+            "message" : self.message,
+            "pinned" : self.pinned
+        }
 class Calendar_task(db.Model):
     __tablename__ = "calendar_task"
     id = db.Column(db.Integer, primary_key=True)
