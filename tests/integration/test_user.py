@@ -1,6 +1,7 @@
 import json
 from flask_testing import TestCase
 from applications import create_app
+import base64
 
 
 class TestAuth(TestCase):
@@ -83,18 +84,18 @@ class TestAuth(TestCase):
         """GIVEN users WHEN adding new user with repeated email THEN service is denied."""
 
         payload = json.dumps({
-            "username": "test_user",
+            "username": "test_user2",
             "password": "password",
-            "email": "test@email.com"
+            "email": "test2@email.com"
         })
         headers = {'Content-Type': 'application/json'}
 
         response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
 
         second_payload = json.dumps({
-            "username": "test_user2",
+            "username": "test_user3",
             "password": "password",
-            "email": "test@email.com"
+            "email": "test2@email.com"
         })
 
         second_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
@@ -102,9 +103,10 @@ class TestAuth(TestCase):
         assert second_response.status_code == 500
         assert second_response.json['message'] == "Username or email already exist."
 
-    def test_get_user_by_public_id(self):
-        """GIVEN users WHEN getting user by public_id THEN returns user details."""
+    def test_get_user_by_username(self):
+        """GIVEN users WHEN getting user by username THEN returns user details."""
 
+        # Creating new user.
         payload = json.dumps({
             "username": "test_user",
             "password": "password",
@@ -112,20 +114,89 @@ class TestAuth(TestCase):
         })
         headers = {'Content-Type': 'application/json'}
 
-        response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
-        public_id = response.json['public_id']
+        create_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
 
-        get_response = self.client.get(f"{self.ROOT_URI}/user/{public_id}", headers=headers)
+        # Loging in.
+        valid_credentials = base64.b64encode(b"test_user:password").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + valid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        token = login_response.json['token']
+
+        # Getting user information.
+        headers_with_token = {'Content-Type': 'application/json', 'x-access-token': token}
+
+        get_response = self.client.get(f"{self.ROOT_URI}/user/test_user", headers=headers_with_token)
 
         assert get_response.status_code == 200
         assert get_response.json['user']['username'] == "test_user"
 
-    def test_get_nonexistent_user_by_id(self):
-        """GIVEN no users WHEN getting user by id THEN service is denied."""
+    def test_get_nonexistent_user_by_username(self):
+        """GIVEN no users WHEN getting user by username THEN service is denied."""
 
+        # Creating new user.
+        payload = json.dumps({
+            "username": "test_user",
+            "password": "password",
+            "email": "test@email.com"
+        })
         headers = {'Content-Type': 'application/json'}
 
-        response = self.client.get(f"{self.ROOT_URI}/user/1234-567-890001", headers=headers)
+        create_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
 
-        assert response.status_code == 404
-        assert response.json['message'] == 'User not found.'
+        # Loging in.
+        valid_credentials = base64.b64encode(b"test_user:password").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + valid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        token = login_response.json['token']
+
+        # Getting user information.
+        headers_with_token = {'Content-Type': 'application/json', 'x-access-token': token}
+
+        get_response = self.client.get(f"{self.ROOT_URI}/user/wrong_user", headers=headers_with_token)
+
+        assert get_response.status_code == 404
+        assert get_response.json['message'] == 'User not found.'
+
+    def test_updating_user_details(self):
+        # Creating new user.
+        payload = json.dumps({
+            "username": "test_user",
+            "password": "password",
+            "email": "test@email.com"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        create_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
+        assert create_response.status_code == 201
+        #
+        # Loging in.
+        valid_credentials = base64.b64encode(b"test_user:password").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + valid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        assert login_response.status_code == 200
+        token = login_response.json['token']
+
+        # Updating details.
+        token_header = {'x-access-token': token, 'Content-Type': 'application/json'}
+        update_payload = json.dumps({
+            "name": "test user name",
+            "skill_level": "skill level",
+            "skills": "a list of skills",
+            "role": "role"
+        })
+        update_response = self.client.patch(f"{self.ROOT_URI}/user/test_user", headers=token_header, data=update_payload)
+        print('HERE', update_response)
+        assert update_response.status_code == 202
+        assert update_response.json['message'] == 'User details successfully updated.'
+
+    def test_login_with_no_credentials(self):
+        pass
+
+    def test_login_with_invalid_username(self):
+        pass
+
+    def test_login_with_invalid_password(self):
+        pass
+
+    def test_login(self):
+        pass

@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import os
 
 def create_app(env=None):
     app = Flask(__name__)
@@ -12,10 +13,8 @@ def create_app(env=None):
     else:
         app.config["TESTING"] = False
         app.config["DEBUG"] = True
-        import os 
-        import dotenv
-        dotenv_file = dotenv.find_dotenv()
-        dotenv.load_dotenv(dotenv_file)
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URL')
+        
         url = os.getenv("DB_URL")
         if 'postgresql' not in url:
             update_url = url.replace("postgres","postgresql")

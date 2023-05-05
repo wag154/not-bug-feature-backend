@@ -1,11 +1,8 @@
 def init_model(db_instance):
-    import dotenv
     import os
     from sqlalchemy import text
     from .model import user_account, Kanban_board, Kanban_task, \
         Calendar, Calendar_task, Creation_event, Project, Announcement, ProjectMember
-    dotenv_file = dotenv.find_dotenv()
-    dotenv.load_dotenv(dotenv_file)
     print(os.getenv("restart_db"))
     if (os.getenv("restart_db") == "1"):
         try:
@@ -19,4 +16,3 @@ def init_model(db_instance):
         except Exception as e:
             print("unable to check", e)
     db_instance.create_all()
-

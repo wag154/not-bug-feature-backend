@@ -5,9 +5,38 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restx import Namespace, Resource
 import uuid
 from sqlalchemy import exc
+import jwt
+import datetime
+from functools import wraps
 
 api = Namespace('users', description='user operations')
 db = db.instance
+
+
+def auth_decorator(f):
+    @wraps(f)
+    def wrapped(self, *args, **kwargs):
+        token = None
+        print(token)
+
+        # Backend will expect to receive the token as a header under this key.
+        if 'x-access-token' in request.headers:
+            token = request.headers['x-access-token']
+
+        if not token:
+            return {"message": "Token is missing."}, 401
+
+        try:
+            data = jwt.decode(token, "secret", algorithms="HS256")
+            current_user = UserModel.query.filter_by(public_id=data['public_id']).first()
+
+        except Exception as e:
+            print(e)
+            return {"message": "Invalid token."}
+
+        return f(self, current_user, *args, **kwargs)
+
+    return wrapped
 
 
 @api.route('/')
@@ -38,10 +67,11 @@ class User(Resource):
             return {"message": "Username or email already exist."}, 500
 
 
-@api.route('/<string:public_id>')
+@api.route('/<string:username>')
 class User(Resource):
-    def patch(self, public_id):
-        user = UserModel.query.filter_by(public_id=public_id).first()
+    @auth_decorator
+    def patch(self, current_user, username):
+        user = UserModel.query.filter_by(username=username).first()
 
         if not user:
             return {"message": "Invalid username."}
@@ -54,16 +84,22 @@ class User(Resource):
         user.role = data['role']
         db.session.commit()
 
-        return {"message": "User details successfully updated."}
+        return {"message": "User details successfully updated."}, 202
 
-    def get(self, public_id):
-        user = UserModel.query.filter_by(public_id=public_id).first()
+    @auth_decorator
+    def get(self, current_user, username):
+        user = UserModel.query.filter_by(username=username).first()
 
         if not user:
             return {"message": "User not found."}, 404
 
-        user_data = {'public_id': user.public_id, 'username': user.username, 'password': user.password,
-                     'email': user.email}
+        user_data = {'public_id': user.public_id,
+                     'username': user.username,
+                     'email': user.email,
+                     'name': user.name,
+                     'skill_level': user.skill_level,
+                     'skills': user.skills,
+                     'role': user.role}
 
         return {"user": user_data}, 200
 
@@ -82,8 +118,13 @@ class User(Resource):
             return make_response('Invalid username.', 401)
 
         if check_password_hash(user.password, auth.password):
-            print('it works')
-            print(user.public_id)
-            return make_response(f'Access granted. {user.public_id}', 200)
+            token = jwt.encode({'public_id': user.public_id,
+                                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=120)},
+                               "secret",
+                               algorithm="HS256")
+
+            return {"message": "Access granted.",
+                    "public_id": user.public_id,
+                    "token": token}, 200
 
         return make_response('Could not verify.', 401)
