@@ -1,6 +1,10 @@
 {
     "path":{
         "project":{
+            "GET":{
+                "path":"/"
+            
+            },
             "POST" :{
                 "path":"/project/1",
                 "required" : "title,description,tech_stack,positions,duration,chatroom_key,number_of_collaborators"
@@ -15,12 +19,20 @@
             }
         },
         "kanban board" :{
+            "GET":{
+                "path" : "/kanban/{project_id}"
+            },
             "POST":{
                 "path" : "/kanban/{project_id}",
                 "required" : "none"
             },
             "PATCH":{
-                "path" : 
+                "path" :  "/kanban/{project_id}",
+                "required" : "requires fields not longer valid"
+            },
+            "DELETE":{
+                "path" : "/kanban/{project_id}",
+                "required":"none"
             }
 
         }
