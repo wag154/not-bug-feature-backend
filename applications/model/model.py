@@ -96,8 +96,7 @@ class Calendar_task(db.Model):
 class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    create_date = db.Column(db.DateTime(),default = datetime.utcnow)
+
 class Creation_event(db.Model):
     __tablename__ = "creation_event"
     id = db.Column(db.Integer, primary_key=True)

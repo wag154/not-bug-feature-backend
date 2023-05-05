@@ -11,16 +11,10 @@ db = db.instance
 @api.route("/<int:id>")
 @api.produces('application/json')
 
-class Calendar (Resource):
+class Calendars (Resource):
     def post(self,id):
        try:
-           info = request.json
-           name = info.get("name")
-
-           if not name:
-               raise ValueError("Missing 'name'")
-           
-           new_calendar = Calendar(name = name)
+           new_calendar = Calendar()
            db.session.add(new_calendar)
            db.session.commit()
            
@@ -33,3 +27,20 @@ class Calendar (Resource):
        
        finally:
            db.session.close()
+    def delete(self,id):
+        try:
+            db.session.delete(Calendar.query.filter_by(id = id))
+            db.session.commit()
+            return {"Message" : "managed to delete!"},200
+        except Exception as e:
+            return {"message" : str(e)}
+        finally:
+            db.session.close()
+@api.route("/task/<int:id>")
+@api.produces('application/json')
+class Calendar_task(Resource):
+    def post (self,id):
+        try:
+            
+        except Exception as e:
+            return {"message" : str(e)}

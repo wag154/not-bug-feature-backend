@@ -27,7 +27,6 @@ class Announcements (Resource):
 
         except Exception as e:
             return {"message": str(e)}
-
     def post (self,id):
         try:
            info = request.json
