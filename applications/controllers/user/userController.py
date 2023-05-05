@@ -1,4 +1,4 @@
-from flask import request, make_response
+from flask import request, jsonify, make_response
 from applications.model.model import user_account as UserModel
 from applications.database import db
 from werkzeug.security import generate_password_hash, check_password_hash
