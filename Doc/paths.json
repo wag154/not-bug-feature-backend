@@ -1,0 +1,28 @@
+{
+    "path":{
+        "project":{
+            "POST" :{
+                "path":"/project/1",
+                "required" : "title,description,tech_stack,positions,duration,chatroom_key,number_of_collaborators"
+                }, 
+            "PATCH":{
+                "path": "/project/{project_id}",
+                "required" : "Same as POST"
+            },
+            "DELETE":{
+                "path": "/project/{project_id}",
+                "required": "none"
+            }
+        },
+        "kanban board" :{
+            "POST":{
+                "path" : "/kanban/{project_id}",
+                "required" : "none"
+            },
+            "PATCH":{
+                "path" : 
+            }
+
+        }
+    }
+}
