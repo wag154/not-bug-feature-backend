@@ -125,13 +125,13 @@ class Task (Resource):
             name = info.get("name")
             category = info.get("category")
             objective = info.get("objective")
+            complete = info.get("complete")
             kanban_id = id
-            if not all ([name,category,objective,kanban_id]):
+            if not all ([name,category,objective,kanban_id,complete]):
                 raise ValueError("missing field")
-            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id)
+            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete)
             db.session.add(new_Task)
             db.session.commit()
-            print("passed")
 
             return {"yes" : new_Task.id }, 200
         except Exception as e:
@@ -144,16 +144,17 @@ class Task (Resource):
             name = info.get("name")
             categories = info.get("category")
             objective = info.get("objective")
+            complete = info.get("complete")
             kanban_task_id = id
 
-            if not all ([name,categories,objective,kanban_task_id]):
+            if not all ([name,categories,objective,kanban_task_id,complete]):
                 raise ValueError ("Missing Field")
           
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
 
-            kanban_task.name,kanban_task.category,kanban_task.objective = name ,categories,objective
+            kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective,complete
             db.session.commit()
 
             return {"message": "success!"}, 200
@@ -180,7 +181,7 @@ class Task (Resource):
             return {"message": "Kanban board deleted successfully"},200
 
         except Exception as e:
-            return {"message": str(e)}
+            return {"message": str(e)},400
          
         finally:
              db.session.close()

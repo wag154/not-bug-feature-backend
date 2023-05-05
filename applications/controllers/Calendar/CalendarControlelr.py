@@ -21,9 +21,11 @@ class Calendars (Resource):
            new_creation_event = Creation_event(project_id = id, calendar_id = new_calendar.id )
            db.session.add(new_creation_event)
            db.session.commit()
-           
+
+           return  {"ID" : new_calendar.id }
+       
        except Exception as e:
-           return {"Error Message" : str(e)}
+           return {"Error Message" : str(e)},400
        
        finally:
            db.session.close()
@@ -36,11 +38,24 @@ class Calendars (Resource):
             return {"message" : str(e)}
         finally:
             db.session.close()
+
 @api.route("/task/<int:id>")
 @api.produces('application/json')
-class Calendar_task(Resource):
+class Calendar_Task(Resource):
     def post (self,id):
         try:
-            
+            info = request.json
+            name = info.get("name")
+            due_date = datetime.utcnow()
+            print(due_date)
+            calendar_id = id 
+            if not all ([name,due_date,calendar_id]):
+                raise ValueError("Missing Field, either misspelt or other")
+            new_task =  Calendar_task(name = name,due_date = due_date,calendar_id = calendar_id)
+            db.session.add(new_task)
+            db.session.commit()
+            return {"ID" : new_task.id },200
         except Exception as e:
-            return {"message" : str(e)}
+            return {"message" : str(e)},200
+        finally:
+            db.session.close()

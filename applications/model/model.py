@@ -19,7 +19,7 @@ class ProjectMember(db.Model):
     __tablename__ = "projectmember"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,nullable = True)
-    level = db.Column(db.Integer, nullable=False)
+    level = db.Column(db.String, nullable=False)
     role = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,db.ForeignKey('project.id',ondelete='CASCADE'), nullable =False )
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
@@ -57,7 +57,7 @@ class Kanban_task(db.Model):
     category = db.Column(db.String, nullable=False)
     objective = db.Column(db.String, nullable=False)
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
-
+    complete = db.Column(db.Boolean,server_default ='t',default = False)
     def to_dict(self):
         return {
             'id' : self.id,
@@ -92,6 +92,7 @@ class Calendar_task(db.Model):
     name = db.Column(db.String(30), nullable=False)
     due_date = db.Column(db.DateTime(), default=datetime.utcnow)
     calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
+    complete = db.Column(db.Boolean,server_default ='t',default = False)
 
 class Calendar(db.Model):
     __tablename__ = 'calendar'
