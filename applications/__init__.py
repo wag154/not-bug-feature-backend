@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_cors import CORS
+import os
 
 
 def create_app(env=None):
@@ -13,7 +14,7 @@ def create_app(env=None):
     else:
         app.config["TESTING"] = False
         app.config["DEBUG"] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://choatmvv:mCKh19dSOOvCYrtXDXELcS8SGJdiQ2Pc@horton.db.elephantsql.com/choatmvv"
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URL')
         app.config["SECRET_KEY"] = "pass"
 
     # Initializing database
