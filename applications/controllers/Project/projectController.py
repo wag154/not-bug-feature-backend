@@ -1,6 +1,6 @@
 from applications import  create_app
 from applications.database import db
-from applications.model.model import Project
+from applications.model.model import Project,Creation_event
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 
@@ -76,9 +76,12 @@ class project(Resource):
             
     def delete(self,id):
         try:
+            
             remove_project = Project.query.filter_by(id = id).first()
-            print(remove_project)
-
+            all_creation_event = Creation_event.query.filter_by(project_id = id).all()
+            for event in all_creation_event:
+                db.session.delete(event)
+            db.session.commit()
             db.session.delete(remove_project)
             db.session.commit()
         

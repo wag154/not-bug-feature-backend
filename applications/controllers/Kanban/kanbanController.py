@@ -16,21 +16,22 @@ class Kanban (Resource):
             project_id = id
             get_kanban_id = [ce.id for ce in Creation_event.query.filter_by(project_id=project_id)]
             kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
-            return {"name":kanban.name, "categories" : kanban.categories}  
+            return {"name":kanban.name, "categories" : kanban.categories},200  
             
         except Exception as e:
-            return {"message" :  str(e)} 
+            return {"message" :  str(e)} ,400
     def post (self,id):
          try:
             info = request.json
             name = info.get("name")
             categories = info.get("categories")
             project_id = id
-
             if not all([name,categories]):
-                raise ValueError("Missing Fields")      
+                raise ValueError("Missing Fields")     
+
             kanban = Kanban_board(name = name, categories = categories)
             db.session.add(kanban)
+            print("kanban",kanban)
             db.session.commit()
 
             create = Creation_event(kanban_id=kanban.id, project_id = project_id)
@@ -67,7 +68,7 @@ class Kanban (Resource):
 
             return {"message":"Update successful!"}, 200
         except ValueError as e:
-            return {"message" : str(e)}
+            return {"message" : str(e)},400
         
         except Exception as e:
             db.session.rollback()
@@ -97,10 +98,10 @@ class Kanban (Resource):
             db.session.delete(kanban)
             db.session.commit()
 
-            return {"message": "Kanban board deleted successfully"}
+            return {"message": "Kanban board deleted successfully"},200
 
          except Exception as e:
-            return {"message": str(e)}
+            return {"message": str(e)},400
          
          finally:
              db.session.close()
@@ -111,13 +112,13 @@ class Task (Resource):
     def get (self,id):
         try :
             kanban_id = id
-
+            print("here", kanban_id)
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
-                
-            print("This is list",all_tasks)
+            print("passed 1")
+
             send_list =[task.to_dict() for task in all_tasks]
             return {"All tasks":f"{send_list}"}, 200
-        
+
         except Exception as e:
             return {"message" :  str(e)}, 400
         finally:
@@ -132,9 +133,9 @@ class Task (Resource):
             if not all ([name,category,objective,kanban_id]):
                 raise ValueError("missing field")
             new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id)
-
             db.session.add(new_Task)
             db.session.commit()
+            print("passed")
 
             return {"yes" : new_Task.id }, 200
         except Exception as e:
@@ -180,7 +181,7 @@ class Task (Resource):
             db.session.delete(remove_task)
             db.session.commit()
 
-            return {"message": "Kanban board deleted successfully"}
+            return {"message": "Kanban board deleted successfully"},200
 
         except Exception as e:
             return {"message": str(e)}

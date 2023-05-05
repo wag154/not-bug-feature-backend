@@ -12,6 +12,14 @@ def create_app(env=None):
     else:
         app.config["TESTING"] = False
         app.config["DEBUG"] = True
+        import os 
+        import dotenv
+        dotenv_file = dotenv.find_dotenv()
+        dotenv.load_dotenv(dotenv_file)
+        url = os.getenv("DB_URL")
+        if 'postgres' in url:
+            update_url = url.replace("postgres","postgresql")
+            
         app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql://choatmvv:mCKh19dSOOvCYrtXDXELcS8SGJdiQ2Pc@horton.db.elephantsql.com/choatmvv"
         app.config["SECRET_KEY"] = "pass"
 
