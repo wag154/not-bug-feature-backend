@@ -170,7 +170,7 @@ class Task (Resource):
             kanban_task_id = id
             remove_task = Kanban_task.query.filter_by(id=kanban_task_id).first()
             if not remove_task:
-                raise ValueError("Couldn't find value!")
+                raise ValueError("Couldn't find task!")
 
             db.session.delete(remove_task)
             db.session.commit()

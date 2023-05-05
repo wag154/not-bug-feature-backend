@@ -17,7 +17,7 @@ class Calendars (Resource):
         try:
             get_id = [event for event in Creation_event.query.filter_by(project_id=id).all() if event.calendar_id is not None]
 
-            return {"id" : get_id[0].id}
+            return {"id" : get_id[0].id},200
         
         except Exception as e:
             return {"message": str(e)},404
@@ -46,7 +46,18 @@ class Calendars (Resource):
            db.session.close()
     def delete(self,id):
         try:
-            db.session.delete(Calendar.query.filter_by(id = id))
+
+
+            cal = Calendar.query.filter_by(id = id).first()
+            all_tasks = Calendar_task.query.filter_by(calendar_id = cal.id).all()
+            for i in all_tasks:
+                db.session.delete(i)
+            db.session.commit()
+
+            creation = Creation_event.query.filter_by(calendar_id = cal.id).first()
+            db.session.delete(creation)
+            db.session.commit()
+            db.session.delete(cal)
             db.session.commit()
             return {"Message" : "managed to delete!"},200
         except Exception as e:
@@ -124,5 +135,16 @@ class Calendar_Task(Resource):
             return {"message" : "success!"},200
         except Exception as e:
             return {"message":str(e)},400
+        finally:
+            db.session.close()
+    def delete (self,id):
+        try:
+            task_id = id
+            get_task = Calendar_task.query.filter_by(id = task_id).first()
+            db.session.delete(get_task)
+            db.session.commit()
+            return {"message":"success!"}, 201
+        except Exception as e:
+            return {"message" : str(e)}
         finally:
             db.session.close()
