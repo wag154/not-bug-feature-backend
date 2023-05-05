@@ -40,7 +40,15 @@ class Project(db.Model):
     def to_dict(self):
         return {
             "id" : self.id,
-
+            "title" : self.title,
+            "description" : self.description,
+            "duration" : self.duration,
+            "number_of_collaborators" : self.number_of_collaborators,
+            "tech_stack" : self.tech_stack,
+            "positions" : self.positions,
+            "chatroom_key" : self.chatroom_key,
+            "user_id" : self.user_id,
+            "url" : self.url
         }
 class Kanban_task(db.Model):
     __tablename__ = "kanban_task"
@@ -61,8 +69,6 @@ class Kanban_task(db.Model):
 class Kanban_board(db.Model):
     __tablename__ = 'kanban_board'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(30), nullable=False)
-    categories = db.Column(db.String, nullable=True)
 
 class Announcement(db.Model):
     __tablename__ = "announcement"

@@ -22,14 +22,9 @@ class Kanban (Resource):
             return {"message" :  str(e)} ,400
     def post (self,id):
          try:
-            info = request.json
-            name = info.get("name")
-            categories = info.get("categories")
             project_id = id
-            if not all([name,categories]):
-                raise ValueError("Missing Fields")     
-
-            kanban = Kanban_board(name = name, categories = categories)
+         
+            kanban = Kanban_board()
             db.session.add(kanban)
             print("kanban",kanban)
             db.session.commit()
