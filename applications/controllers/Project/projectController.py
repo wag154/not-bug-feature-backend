@@ -73,8 +73,6 @@ class project(Resource):
 
             if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators]):
                 raise ValueError("Missing fields")
-            
-
 
             update_project = Project.query.filter_by(user_id = user_id,id = id).first()
             update_project.title, update_project.description, update_project.tech_stack,update_project.positions,update_project.user_id, update_project.duration,update_project.number_of_collaborators = title,description,tech_stack,positions,user_id,duration,num_of_collaborators
@@ -88,11 +86,16 @@ class project(Resource):
             db.session.close()
             
     def delete(self,id):
-        try:
-
+        try:     
             remove_project = Project.query.filter_by(id = id).first()
             all_creation_event = Creation_event.query.filter_by(project_id = id).all()
             for event in all_creation_event:
+                if event.kanban_id:
+                    print("kanban")
+                elif event.calendar_id:
+                    print("calendar")
+                elif event.project_member_id:
+                    print("project_member")
                 db.session.delete(event)
             db.session.commit()
             db.session.delete(remove_project)

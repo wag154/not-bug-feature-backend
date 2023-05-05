@@ -2,8 +2,8 @@
     "path":{
         "project":{
             "GET":{
-                "path":"/"
-            
+                "path":"/project/{user_id}", //without auth
+                "required": "none"
             },
             "POST" :{
                 "path":"/project/1",
@@ -34,7 +34,11 @@
                 "path" : "/kanban/{project_id}",
                 "required":"none"
             }
-
+        },
+        "kanban task":{
+            "GET":{
+                "path" : "/kanban/{kanban_id}"
+            }
         }
     }
 }
