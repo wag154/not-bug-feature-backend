@@ -6,6 +6,7 @@ from flask_restx import Namespace, Resource
 
 api = Namespace('TeamMember', description='TeamMember operations')
 db = db.instance
+
 @api.route("/increase_level/<int:id>")
 @api.produces('application/json')
 class IncreaseMemberLevel(Resource):
@@ -32,7 +33,12 @@ class IncreaseMemberLevel(Resource):
 @api.produces('application/json')
 class TeamMember(Resource):
     def get (self):
-        pass
+        
+        try:
+            pass
+        except Exception as e:
+            return {"message": str(e)}
+
     def post (self,id):
         try:
             info = request.json

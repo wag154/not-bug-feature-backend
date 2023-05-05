@@ -4,7 +4,6 @@ from datetime import datetime
 db = db.instance
 class user_account(db.Model):
     __tablename__ = "user_account"
-
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
@@ -23,6 +22,16 @@ class ProjectMember(db.Model):
     role = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,db.ForeignKey('project.id',ondelete='CASCADE'), nullable =False )
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
+
+    def to_dict(self):
+        return{
+            "id":self.id,
+            "name" : self.name,
+            "level" : self.level,
+            "role" : self.role,
+            "project_id" : self.project_id,
+            "user_id" : self.user_id
+        }
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -77,7 +86,6 @@ class Announcement(db.Model):
     title = db.Column(db.String(100), nullable=False)
     message = db.Column(db.String(500), nullable=True, default='')
     pinned = db.Column(db.Boolean, server_default='t', default=False)
-
     def to_dict(self):
         return {
             "id" : self.id,
@@ -94,6 +102,14 @@ class Calendar_task(db.Model):
     calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
     complete = db.Column(db.Boolean,server_default ='t',default = False)
 
+    def to_dict(self):
+        return{
+            "id" : self.id,
+            "username" : self.name,
+            "title" : self.due_date,
+            "calendar_id" : self.calendar_id,
+            "complete" : self.complete
+        }
 class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)

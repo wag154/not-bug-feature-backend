@@ -3,7 +3,7 @@ from applications.database import db
 from applications.model.model import Kanban_board,Creation_event, Kanban_task
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
-import jsonify
+import json
 
 api = Namespace('kanban', description='kanban operations')
 db = db.instance
@@ -14,7 +14,7 @@ class Kanban (Resource):
     def get (self,id):
         try :
             project_id = id
-            get_kanban_id = [ce.id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            get_kanban_id = [id for ce in Creation_event.query.filter_by(project_id=project_id)]
             kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
             return {"name":kanban.name, "categories" : kanban.categories},200  
             
@@ -107,11 +107,10 @@ class Task (Resource):
     def get (self,id):
         try :
             kanban_id = id
-            print("here", kanban_id)
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
-            print("passed 1")
 
-            send_list =[task.to_dict() for task in all_tasks]
+            send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
+
             return {"All tasks":f"{send_list}"}, 200
 
         except Exception as e:
