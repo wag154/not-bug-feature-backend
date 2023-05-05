@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from applications.model.model import Announcement,Creation_event
 
-api = Namespace('announcement', description='announcement operations')
+api = Namespace('Announcement', description='Announcement operations')
 db = db.instance
 
 @api.route("/<int:id>")
@@ -12,13 +12,12 @@ db = db.instance
 class Announcements (Resource):
     def get(self,id):
         try:
-
             project_id = id 
             get_announcement_id = Creation_event.query.filter_by(project_id = project_id).all()
             all_id = [i.id for i in get_announcement_id]
             all_announcements = [Announcement.query.filter_by(id = id).all() for id in all_id]
             if not all_announcements or all_announcements==None:
-                raise ValueError("Not announcements")
+                raise ValueError("No announcements")
             send_list = []
             for i in all_announcements:
                 child = [a.to_dict() for a in i]

@@ -4,7 +4,7 @@ from applications.model.model import Project,Creation_event
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 
-api = Namespace('project', description='project operations')
+api = Namespace('Project', description='Project operations')
 db = db.instance
 
 @api.route('/<int:id>')

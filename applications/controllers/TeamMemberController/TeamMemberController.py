@@ -32,13 +32,14 @@ class IncreaseMemberLevel(Resource):
 @api.route("/<int:id>")
 @api.produces('application/json')
 class TeamMember(Resource):
-    def get (self):
-        
+    def get (self,id): 
         try:
-            pass
+            project_id = id
+            get_all = ProjectMember.query.filter_by(project_id = project_id).all()
+            send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
+            return {"All tasks" : f"{send_list}"},200
         except Exception as e:
-            return {"message": str(e)}
-
+            return {"message": str(e)},400
     def post (self,id):
         try:
             info = request.json

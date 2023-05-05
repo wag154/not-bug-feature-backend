@@ -6,7 +6,7 @@ import json
 from flask_restx import Namespace, Resource
 from datetime import datetime
 
-api = Namespace('calendar', description='calendar operations')
+api = Namespace('Calendar', description='Calendar operations')
 db = db.instance
 
 @api.route("/<int:id>")
@@ -24,6 +24,10 @@ class Calendars (Resource):
 
     def post(self,id):
        try:
+           test_id = Creation_event.query.filter_by(project_id = id).first()
+           if test_id:
+               return {"message": "calendar already exists"},409
+            
            new_calendar = Calendar()
            db.session.add(new_calendar)
            db.session.commit()
@@ -106,7 +110,6 @@ class Calendar_Task(Resource):
             calendar_task_id = id
             if not all ([name,due_date_str,calendar_task_id,complete_str]):
                 raise ValueError("Missing Field, either misspelt or other")
-            print("here",complete_str)
             complete = (lambda a,b,c :a if (c == "true") else b )(True,False,complete_str)
             without = due_date_str.split(".")[0]
             due_date = datetime.strptime(without, '%Y-%m-%d %H:%M:%S')
@@ -114,7 +117,7 @@ class Calendar_Task(Resource):
             update_task = Calendar_task.query.filter_by(id = id ).first()
             update_task.name = name
             update_task.due_date = due_date
-            update_task
+            update_task.complete = complete
 
             db.session.commit()
 

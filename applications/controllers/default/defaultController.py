@@ -2,13 +2,17 @@ from applications import  create_app
 from applications.database import db
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
-
-api = Namespace('default', description='default operations')
+import json
+api = Namespace('Default', description='/default to get json of all required')
 db = db.instance
 
 @api.route('/')
 @api.produces('application/json')
 class hello(Resource):
     def get(self):
-        print("here")
-        return {'message': 'hello world'}
+      
+        with open("Doc/paths.json", "r") as f:
+            data = json.load(f)
+            print(data)
+
+        return data

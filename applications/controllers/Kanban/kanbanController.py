@@ -5,7 +5,7 @@ from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import json
 
-api = Namespace('kanban', description='kanban operations')
+api = Namespace('Kanban', description='Kanban operations')
 db = db.instance
 
 @api.route('/<int:id>')
@@ -108,9 +108,7 @@ class Task (Resource):
         try :
             kanban_id = id
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
-
             send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
-
             return {"All tasks":f"{send_list}"}, 200
 
         except Exception as e:
