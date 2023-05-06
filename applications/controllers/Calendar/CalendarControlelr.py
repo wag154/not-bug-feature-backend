@@ -1,12 +1,12 @@
 from applications import  create_app
-from applications.database import db
+from applications.database import database_service
 from applications.model.model import Calendar,Calendar_task,Creation_event
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from datetime import datetime
 
 api = Namespace('calendar', description='calendar operations')
-db = db.instance
+db = database_service.instance
 
 @api.route("/<int:id>")
 @api.produces('application/json')

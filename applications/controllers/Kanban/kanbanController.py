@@ -1,12 +1,12 @@
 from applications import  create_app
-from applications.database import db
+from applications.database import database_service
 from applications.model.model import Kanban_board,Creation_event, Kanban_task
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import jsonify
 
 api = Namespace('kanban', description='kanban operations')
-db = db.instance
+db = database_service.instance
 
 @api.route('/<int:id>')
 @api.produces('application/json')

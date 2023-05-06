@@ -1,5 +1,5 @@
 from applications import create_app
-from applications.database import db
+from applications.database import database_service
 from unittest import TestCase
 import json
 

@@ -1,11 +1,11 @@
 from applications import  create_app
-from applications.database import db
+from applications.database import database_service
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 from applications.model.model import Announcement,Creation_event
 
 api = Namespace('announcement', description='announcement operations')
-db = db.instance
+db = database_service.instance
 
 @api.route("/<int:id>")
 @api.produces('application/json')

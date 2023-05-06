@@ -2,6 +2,10 @@ from flask import Flask
 from flask_cors import CORS
 import os
 
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
 def create_app(env=None):
     app = Flask(__name__)
 
@@ -19,13 +23,16 @@ def create_app(env=None):
         if 'postgresql' not in url:
             update_url = url.replace("postgres","postgresql")
 
-        app.config['SQLALCHEMY_DATABASE_URI'] = update_url or url
+        # app.config['SQLALCHEMY_DATABASE_URI'] = update_url or url
         app.config["SECRET_KEY"] = "pass"
 
     # Initializing database
-    from applications.database import db
-    app.app_context().push()
+    from applications.database import database_service
     db.init_app(app)
+    app.app_context().push()
+    database_service.init_app(db)
+
+    # Setting up CORS
     CORS(app)
     
     from applications.controllers import api
