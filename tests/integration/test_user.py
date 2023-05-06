@@ -1,6 +1,6 @@
 import json
 from flask_testing import TestCase
-from applications import create_app
+from applications import create_app, db
 import base64
 
 
@@ -9,6 +9,13 @@ class TestAuth(TestCase):
 
     def create_app(self):
         return create_app('TEST')
+
+    def setUp(self):
+        db.create_all()
+
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
 
     def test_user_root(self):
         response = self.client.get(f"{self.ROOT_URI}/user/")
@@ -72,7 +79,7 @@ class TestAuth(TestCase):
         second_payload = json.dumps({
             "username": "test_user",
             "password": "password",
-            "email": "test2@email.com"
+            "email": "test@email.com"
         })
 
         second_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
@@ -190,13 +197,48 @@ class TestAuth(TestCase):
         assert update_response.json['message'] == 'User details successfully updated.'
 
     def test_login_with_no_credentials(self):
-        pass
+        """GIVEN no credentials are passed WHEN logging  in THEN returns 401."""
+        # Creating new user.
+        payload = json.dumps({
+            "username": "test_user",
+            "password": "password",
+            "email": "test@email.com"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        create_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
+        assert create_response.status_code == 201
+
+        # Loging in.
+        invalid_credentials = base64.b64encode(b" : ").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + invalid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        assert login_response.status_code == 401
 
     def test_login_with_invalid_username(self):
-        pass
-
-    def test_login_with_invalid_password(self):
-        pass
+        """GIVEN invalid username WHEN logging  in THEN returns 401."""
+        # Loging in.
+        valid_credentials = base64.b64encode(b"test_user:password").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + valid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        assert login_response.status_code == 401
 
     def test_login(self):
-        pass
+        """GIVEN correct credentials WHEN logging in THEN returns proper message."""
+        # Creating new user.
+        payload = json.dumps({
+            "username": "test_user",
+            "password": "password",
+            "email": "test@email.com"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        create_response = self.client.post(f"{self.ROOT_URI}/user/", data=payload, headers=headers)
+        assert create_response.status_code == 201
+        #
+        # Loging in.
+        valid_credentials = base64.b64encode(b"test_user:password").decode("utf-8")
+        auth_header = {"Authorization": "Basic " + valid_credentials}
+        login_response = self.client.get(f"{self.ROOT_URI}/user/login", headers=auth_header)
+        assert login_response.status_code == 200
+        assert login_response.json['message'] == 'Access granted.'

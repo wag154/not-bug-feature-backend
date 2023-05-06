@@ -1,6 +1,6 @@
 from flask import request, jsonify, make_response
 from applications.model.model import user_account as UserModel
-from applications.database import db
+from applications.database import database_service
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_restx import Namespace, Resource
 import uuid
@@ -10,7 +10,7 @@ import datetime
 from functools import wraps
 
 api = Namespace('users', description='user operations')
-db = db.instance
+db = database_service.instance
 
 
 def auth_decorator(f):

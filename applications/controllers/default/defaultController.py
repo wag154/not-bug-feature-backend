@@ -1,10 +1,10 @@
 from applications import  create_app
-from applications.database import db
+from applications.database import database_service
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 
 api = Namespace('default', description='default operations')
-db = db.instance
+db = database_service.instance
 
 @api.route('/')
 @api.produces('application/json')

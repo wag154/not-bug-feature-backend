@@ -1,7 +1,7 @@
-from applications.database import db
+from applications.database import database_service
 from datetime import datetime
 
-db = db.instance
+db = database_service.instance
 class user_account(db.Model):
     __tablename__ = "user_account"
 
@@ -15,8 +15,10 @@ class user_account(db.Model):
     skills = db.Column(db.String(500), nullable=True, default="")
     role = db.Column(db.String(100), nullable=True, default="")
 
+
 class ProjectMember(db.Model):
     __tablename__ = "projectmember"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,nullable = True)
     level = db.Column(db.Integer, nullable=False)

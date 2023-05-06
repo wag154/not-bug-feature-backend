@@ -1,11 +1,11 @@
 from applications import  create_app
-from applications.database import db
+from applications.database import database_service
 from applications.model.model import Project,Creation_event
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
 
 api = Namespace('project', description='project operations')
-db = db.instance
+db = database_service.instance
 
 @api.route('/<int:id>')
 @api.produces('application/json')
@@ -37,15 +37,15 @@ class project(Resource):
                 raise ValueError("Missing fields")
         
             project = Project(
-             title=title,
-            description=description,
-            tech_stack=tech_stack,
-            positions=positions,
-            user_id=user_id,
-            duration=duration,
-            number_of_collaborators=int(num_of_collaborators),
-            chatroom_key = chatroom_key
-        )
+                title=title,
+                description=description,
+                tech_stack=tech_stack,
+                positions=positions,
+                user_id=user_id,
+                duration=duration,
+                number_of_collaborators=int(num_of_collaborators),
+                chatroom_key = chatroom_key
+            )
             db.session.add(project)
             db.session.commit()
 
