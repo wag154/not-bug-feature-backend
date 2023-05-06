@@ -23,10 +23,13 @@ class Kanban (Resource):
     def post (self,id):
          try:
             project_id = id
-         
+            test_id = Creation_event.query.filter_by(project_id = id).all()
+
+            for i in test_id:
+              if i and i.kanban_id:
+                 return {"message": "kanban already exists"},409
             kanban = Kanban_board()
             db.session.add(kanban)
-            print("kanban",kanban)
             db.session.commit()
 
             create = Creation_event(kanban_id=kanban.id, project_id = project_id)
@@ -126,11 +129,12 @@ class Task (Resource):
             kanban_id = id
             if not all ([name,category,objective,kanban_id,complete]):
                 raise ValueError("missing field")
-            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete)
+            complete_return = (lambda a,b,c :a if (c == "true") else b )(True,False,complete)
+            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
             db.session.add(new_Task)
             db.session.commit()
 
-            return {"yes" : new_Task.id }, 200
+            return {"task_id" : new_Task.id }, 200
         except Exception as e:
             return {"Message" : str(e)}, 404
         finally: 

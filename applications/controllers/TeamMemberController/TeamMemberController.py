@@ -56,8 +56,8 @@ class TeamMember(Resource):
             checker = ProjectMember.query.filter_by(user_id = int(user_id),project_id= project_id).first()
             if checker:
                 return {"Failed" : "user already is a member of this project!"}, 409
-               
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
+    
             db.session.add(new_member)
             db.session.commit()
             db.session.add(new_creation_event)

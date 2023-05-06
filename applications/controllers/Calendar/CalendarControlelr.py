@@ -61,7 +61,7 @@ class Calendars (Resource):
             db.session.commit()
             return {"Message" : "managed to delete!"},200
         except Exception as e:
-            return {"message" : str(e)}
+            return {"message" : str(e)},404
         finally:
             db.session.close()
 
