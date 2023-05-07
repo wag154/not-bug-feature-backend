@@ -101,7 +101,7 @@ class User(Resource):
                      'skills': user.skills,
                      'role': user.role}
 
-        return {"user": user_data}, 200
+        return user_data, 200
 
 
 @api.route('/login')
