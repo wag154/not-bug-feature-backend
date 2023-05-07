@@ -9,7 +9,6 @@ db = database_service.instance
 
 @api.route('/<int:id>')
 @api.produces('application/json')
-
 class project(Resource):
     def get (self,id):
         try:
