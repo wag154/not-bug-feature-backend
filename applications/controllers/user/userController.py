@@ -58,7 +58,7 @@ class User(Resource):
 
             db.session.add(new_user)
             db.session.commit()
-            return {"message": "New user created.", "public_id": f"{new_user.public_id}"}, 201
+            return {"message": "New user created.", "user_id": f"{new_user.id}"}, 201
 
         except KeyError:
             return {"message": "Invalid information."}, 500
@@ -93,7 +93,7 @@ class User(Resource):
         if not user:
             return {"message": "User not found."}, 404
 
-        user_data = {'public_id': user.public_id,
+        user_data = {'user_id': user.id,
                      'username': user.username,
                      'email': user.email,
                      'name': user.name,
