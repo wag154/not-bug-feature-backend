@@ -10,7 +10,7 @@ class user_account(db.Model):
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
-    name = db.Column(db.String(255), nullable=True)
+    name = db.Column(db.String(255), nullable=True, default="")
     skill_level = db.Column(db.String(100), nullable=True, default="")
     skills = db.Column(db.String(500), nullable=True, default="")
     role = db.Column(db.String(100), nullable=True, default="")
