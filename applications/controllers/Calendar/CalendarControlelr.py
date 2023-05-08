@@ -83,8 +83,8 @@ class Calendar_Task(Resource):
                     for task in all_tasks
                   ] 
 
-
-            return {"All Tasks":f"{send_list}"},200
+            serialised_send_list = json.dumps(send_list)
+            return jsonify({"All Tasks":serialised_send_list}),200
 
         except Exception as e:
             return {"message" : str(e)}

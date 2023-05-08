@@ -35,6 +35,7 @@ class Kanban (Resource):
             create = Creation_event(kanban_id=kanban.id, project_id = project_id)
             db.session.add(create)
             db.session.commit()
+            print("id", kanban.id)
             return {"kanban ID" : kanban.id} , 200
          
          except Exception as e:
@@ -112,7 +113,8 @@ class Task (Resource):
             kanban_id = id
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
             send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
-            return {"All tasks":f"{send_list}"}, 200
+            serialized_send_list = json.dumps(send_list)
+            return jsonify({"All tasks":serialized_send_list}), 200
 
         except Exception as e:
             return {"message" :  str(e)}, 400
@@ -133,9 +135,9 @@ class Task (Resource):
             new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
             db.session.add(new_Task)
             db.session.commit()
-
             return {"task_id" : new_Task.id }, 200
         except Exception as e:
+            print(str(e))
             return {"Message" : str(e)}, 404
         finally: 
             db.session.close()

@@ -261,7 +261,8 @@ class TestAuth(TestCase):
         task_payload = {
             "name": "hello world",
             "objective" :"print('hello world')",
-            "category" : "hello world"
+            "category" : "hello world",
+            "complete" : "false"
         }
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
         assert resp.status_code == 200
@@ -292,30 +293,29 @@ class TestAuth(TestCase):
             "chatroom_key": "this-will-be-a-chatroom-key",
             "number_of_collaborators": "0"
         })
-
+        resp_project = self.client.post(f"{self.ROOT_URI}/project/1",data = payload,headers=headers)
+        assert resp_project.status_code == 201
         # Creating kanban board.
-        kanban_payload = {
-            "name": "Test",
-            "category": "hello world,goodbye world"
-        }
+  
 
-        resp = self.client.post(f"{self.ROOT_URI}/kanban/1", data=kanban_payload, headers=headers)
+        resp = self.client.post(f"{self.ROOT_URI}/kanban/1", headers=headers)
         assert resp.status_code == 200
 
         # Adding task to kanban board.
         task_payload = {
             "name": "hello world",
             "objective": "print('hello world')",
-            "category": "hello world"
+            "category": "hello world",
+            "complete" : "false"
         }
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp.status_code == 200
+        assert resp2.status_code == 201
 
         # Getting kanban tasks.
         resp3 = self.client.get(f"{self.ROOT_URI}/kanban/task/1")
 
         assert len(resp3.json["All tasks"]) != 0
-        assert resp.status_code == 200
+        assert resp3.status_code == 200
 
     # TODO: check if test below is correct.
     def test_delete_kanban_tasks(self):
@@ -358,10 +358,11 @@ class TestAuth(TestCase):
         task_payload = {
             "name": "hello world",
             "objective": "print('hello world')",
-            "category": "hello world"
+            "category": "hello world",
+            "complete" : "false"
         }
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp.status_code == 200
+        assert resp2.status_code == 200
 
         # Deleting task.
         resp3 = self.client.delete(f"{self.ROOT_URI}/kanban/task/1")
@@ -407,7 +408,8 @@ class TestAuth(TestCase):
         task_payload = json.dumps({
             "name": "hello world",
             "objective": "print('hello world')",
-            "category": "hello world"
+            "category": "hello world",
+            "complete" : "false"
         })
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
         assert resp.status_code == 200
@@ -416,7 +418,8 @@ class TestAuth(TestCase):
         put_payload = json.dumps({
             "name" : "World Hello",
             "objective" : "print('world hello')",
-            "category" : "hello world"
+            "category" : "hello world",
+            "complete" : "false"
         })
 
         resp3 = self.client.put("/kanban/task/1", data=put_payload, headers=headers)
