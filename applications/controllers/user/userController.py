@@ -78,10 +78,21 @@ class User(Resource):
 
         data = request.get_json()
 
-        user.name = data['name']
-        user.skill_level = data['skill_level']
-        user.skills = data['skills']
-        user.role = data['role']
+        if 'name' in data:
+            user.name = data['name']
+
+        if 'skill_level' in data:
+            user.skill_level = data['skill_level']
+
+        if 'skills' in data:
+            user.skills = data['skills']
+
+        if 'role' in data:
+            user.role = data['role']
+
+        if 'chat_uid' in data:
+            user.chat_uid = data['chat_uid']
+
         db.session.commit()
 
         return {"message": "User details successfully updated."}, 202
@@ -99,7 +110,8 @@ class User(Resource):
                      'name': user.name,
                      'skill_level': user.skill_level,
                      'skills': user.skills,
-                     'role': user.role}
+                     'role': user.role,
+                     'chat_uid': user.chat_uid}
 
         return user_data, 200
 
