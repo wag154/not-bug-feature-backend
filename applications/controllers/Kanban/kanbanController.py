@@ -3,9 +3,9 @@ from applications.database import database_service
 from applications.model.model import Kanban_board,Creation_event, Kanban_task
 from flask import request, jsonify
 from flask_restx import Namespace, Resource
-import jsonify
+import json
 
-api = Namespace('kanban', description='kanban operations')
+api = Namespace('Kanban', description='Kanban operations')
 db = database_service.instance
 
 @api.route('/<int:id>')
@@ -14,7 +14,7 @@ class Kanban (Resource):
     def get (self,id):
         try :
             project_id = id
-            get_kanban_id = [ce.id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            get_kanban_id = [id for ce in Creation_event.query.filter_by(project_id=project_id)]
             kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
             return {"name":kanban.name, "categories" : kanban.categories},200  
             
@@ -23,10 +23,13 @@ class Kanban (Resource):
     def post (self,id):
          try:
             project_id = id
-         
+            test_id = Creation_event.query.filter_by(project_id = id).all()
+
+            for i in test_id:
+              if i and i.kanban_id:
+                 return {"message": "kanban already exists"},409
             kanban = Kanban_board()
             db.session.add(kanban)
-            print("kanban",kanban)
             db.session.commit()
 
             create = Creation_event(kanban_id=kanban.id, project_id = project_id)
@@ -107,32 +110,31 @@ class Task (Resource):
     def get (self,id):
         try :
             kanban_id = id
-            print("here", kanban_id)
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
-            print("passed 1")
-
-            send_list =[task.to_dict() for task in all_tasks]
+            send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
             return {"All tasks":f"{send_list}"}, 200
 
         except Exception as e:
             return {"message" :  str(e)}, 400
         finally:
             db.session.close()
+            
     def post(self, id):
         try:
             info = request.json
             name = info.get("name")
             category = info.get("category")
             objective = info.get("objective")
+            complete = info.get("complete")
             kanban_id = id
-            if not all ([name,category,objective,kanban_id]):
+            if not all ([name,category,objective,kanban_id,complete]):
                 raise ValueError("missing field")
-            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id)
+            complete_return = (lambda a,b,c :a if (c == "true") else b )(True,False,complete)
+            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
             db.session.add(new_Task)
             db.session.commit()
-            print("passed")
 
-            return {"yes" : new_Task.id }, 200
+            return {"task_id" : new_Task.id }, 200
         except Exception as e:
             return {"Message" : str(e)}, 404
         finally: 
@@ -143,16 +145,17 @@ class Task (Resource):
             name = info.get("name")
             categories = info.get("category")
             objective = info.get("objective")
+            complete = info.get("complete")
             kanban_task_id = id
 
-            if not all ([name,categories,objective,kanban_task_id]):
+            if not all ([name,categories,objective,kanban_task_id,complete]):
                 raise ValueError ("Missing Field")
           
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
 
-            kanban_task.name,kanban_task.category,kanban_task.objective = name ,categories,objective
+            kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective,complete
             db.session.commit()
 
             return {"message": "success!"}, 200
@@ -171,7 +174,7 @@ class Task (Resource):
             kanban_task_id = id
             remove_task = Kanban_task.query.filter_by(id=kanban_task_id).first()
             if not remove_task:
-                raise ValueError("Couldn't find value!")
+                raise ValueError("Couldn't find task!")
 
             db.session.delete(remove_task)
             db.session.commit()
@@ -179,7 +182,7 @@ class Task (Resource):
             return {"message": "Kanban board deleted successfully"},200
 
         except Exception as e:
-            return {"message": str(e)}
+            return {"message": str(e)},400
          
         finally:
              db.session.close()

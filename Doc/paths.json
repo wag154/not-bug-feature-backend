@@ -1,13 +1,13 @@
 {
-    "path":{
+    "paths":{
         "project":{
             "GET":{
-                "path":"/"
-            
+                "path":"/project/{user_id}", 
+                "required": "none"
             },
             "POST" :{
                 "path":"/project/1",
-                "required" : "title,description,tech_stack,positions,duration,chatroom_key,number_of_collaborators"
+                "required" : "title(29 char max),description(max 250),tech_stack,positions,duration(int days),chatroom_key,number_of_collaborators"
                 }, 
             "PATCH":{
                 "path": "/project/{project_id}",
@@ -34,7 +34,64 @@
                 "path" : "/kanban/{project_id}",
                 "required":"none"
             }
+        },
+        "kanban task":{
+            "GET":{
+                "path" : "/kanban/task/{kanban_id}",
+                "required" : "none"
+            },
+            "POST":{
+                "path": "/kanban/task/{kanban_id}",
+                "required" : "name (29 char max), category,objective,complete (boolean, anything other than 'true' will be counted as false)"
+            },
+            "PATCH" :{
 
+                "path":"/kanban/task/{task_id}",
+                "required" : "all of the post"
+            } ,
+            "DELETE" : {
+                "path" :"/kanban/task/{task_id}",
+                "required" : "none"
+            }
+        },
+        "calendar" : {
+            "POST":{
+                "path" : "/calendar/{project_id}",
+                "required" : "none"
+            },
+            "DELETE":{
+                "path": "/calendar/{calendar_id}",
+                "required" : "none"
+            }
+        },
+        "calendar task":{
+            "POST":{
+                "path" : "/calendar/task/{calendar_id}",
+                "required" : "name, due_date(in date time format), calendar_id,complete(bool)"
+            },
+            "PATCH":{
+                "path" : "/calendar/task/{calendar_id}",
+                "required" : "all of the post"
+             },
+             "DELETE":{
+                "path": "/calendar/task/{calendar_id}",
+                "required" : "none"
+             }
+        },
+        "project member" :{
+            "POST":{
+                "path" : "/projectmember/{project_id}",
+                "required" : "name , level , role , project_id, user_id (without auth)"
+            },
+            "PATCH":{
+                "path" : "/projectmember/{project_id}",
+                "required": "all for post"
+            },
+            "PATCH(Increase or decrease user level (permission access))":{
+                "path" : "/projectmember/increase_level/{project_id}",
+                "required":"only level to update"
+            }
         }
+
     }
 }

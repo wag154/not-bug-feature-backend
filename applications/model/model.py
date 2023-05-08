@@ -4,7 +4,6 @@ from datetime import datetime
 db = database_service.instance
 class user_account(db.Model):
     __tablename__ = "user_account"
-
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
     username = db.Column(db.String(100), nullable=False, unique=True)
@@ -21,10 +20,20 @@ class ProjectMember(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,nullable = True)
-    level = db.Column(db.Integer, nullable=False)
+    level = db.Column(db.String, nullable=False)
     role = db.Column(db.String(100), nullable=False)
     project_id = db.Column(db.Integer,db.ForeignKey('project.id',ondelete='CASCADE'), nullable =False )
     user_id = db.Column(db.Integer,db.ForeignKey('user_account.id'))
+
+    def to_dict(self):
+        return{
+            "id":self.id,
+            "name" : self.name,
+            "level" : self.level,
+            "role" : self.role,
+            "project_id" : self.project_id,
+            "user_id" : self.user_id
+        }
 
 class Project(db.Model):
     __tablename__ = "project"
@@ -59,7 +68,7 @@ class Kanban_task(db.Model):
     category = db.Column(db.String, nullable=False)
     objective = db.Column(db.String, nullable=False)
     kanban_id = db.Column(db.Integer, db.ForeignKey('kanban_board.id'))
-
+    complete = db.Column(db.Boolean,server_default ='t',default = False)
     def to_dict(self):
         return {
             'id' : self.id,
@@ -79,19 +88,34 @@ class Announcement(db.Model):
     title = db.Column(db.String(100), nullable=False)
     message = db.Column(db.String(500), nullable=True, default='')
     pinned = db.Column(db.Boolean, server_default='t', default=False)
-
+    def to_dict(self):
+        return {
+            "id" : self.id,
+            "username" : self.username,
+            "title" : self.title,
+            "message" : self.message,
+            "pinned" : self.pinned
+        }
 class Calendar_task(db.Model):
     __tablename__ = "calendar_task"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
     due_date = db.Column(db.DateTime(), default=datetime.utcnow)
     calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
+    complete = db.Column(db.Boolean,server_default ='t',default = False)
 
+    def to_dict(self):
+        return{
+            "id" : self.id,
+            "username" : self.name,
+            "title" : self.due_date,
+            "calendar_id" : self.calendar_id,
+            "complete" : self.complete
+        }
 class Calendar(db.Model):
     __tablename__ = 'calendar'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String, nullable=False)
-    create_date = db.Column(db.DateTime(),default = datetime.utcnow)
+
 class Creation_event(db.Model):
     __tablename__ = "creation_event"
     id = db.Column(db.Integer, primary_key=True)

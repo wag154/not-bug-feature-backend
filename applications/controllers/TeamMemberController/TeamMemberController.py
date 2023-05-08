@@ -7,11 +7,38 @@ from flask_restx import Namespace, Resource
 api = Namespace('TeamMember', description='TeamMember operations')
 db = database_service.instance
 
+@api.route("/increase_level/<int:id>")
+@api.produces('application/json')
+class IncreaseMemberLevel(Resource):
+    def put(self,id):
+        try:
+            info = request.json
+            get_member = ProjectMember.query.filter_by(id = id).first()
+
+            
+            if info.get("level") is not None:
+                 get_member.level = info.get("level")
+            else:
+                raise ValueError("Missing Level")
+            
+            db.session.commit()
+            return {"new level" : get_member.level},200
+        
+        except Exception as e:
+            return {"message" : str(e)},200
+        finally:
+            db.session.close()
 @api.route("/<int:id>")
 @api.produces('application/json')
 class TeamMember(Resource):
-    def get (self):
-        pass
+    def get (self,id): 
+        try:
+            project_id = id
+            get_all = ProjectMember.query.filter_by(project_id = project_id).all()
+            send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
+            return {"All tasks" : f"{send_list}"},200
+        except Exception as e:
+            return {"message": str(e)},400
     def post (self,id):
         try:
             info = request.json
@@ -20,17 +47,17 @@ class TeamMember(Resource):
             role = info.get("role")
             user_id = info.get("user_id")
             project_id = id
+            print(level,role,user_id,project_id,name)
 
             if not all ([level,role,user_id,project_id,name]):
                 raise ValueError("Missing field")
             
-            new_member = ProjectMember(level = level, role = role, user_id = user_id,project_id = project_id)
+            new_member = ProjectMember(name = name,level = level, role = role, user_id = user_id,project_id = project_id)
             checker = ProjectMember.query.filter_by(user_id = int(user_id),project_id= project_id).first()
-            print(checker)
             if checker:
                 return {"Failed" : "user already is a member of this project!"}, 409
-            
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
+    
             db.session.add(new_member)
             db.session.commit()
             db.session.add(new_creation_event)

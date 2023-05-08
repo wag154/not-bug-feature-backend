@@ -11,7 +11,7 @@ from applications.controllers.Announcement.announcementController import api as 
 api = Api(title='My API')
 
 api.add_namespace(user_controller, path='/user')
-api.add_namespace(default_controller,path="/yes")
+api.add_namespace(default_controller,path="/default")
 api.add_namespace(kanban_controller, path="/kanban")
 api.add_namespace(calendar_controller,path = "/calendar")
 api.add_namespace(project_controller, path = "/project")

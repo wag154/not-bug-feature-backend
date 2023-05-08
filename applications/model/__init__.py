@@ -11,8 +11,12 @@ def init_model(db_instance):
             db_instance.session.execute(text('DROP TABLE IF EXISTS user_account CASCADE;'))
             db_instance.session.commit()
             db_instance.drop_all()
+            db_instance.create_all()
+            db_instance.session.execute(text("INSERT INTO user_account(public_id,username,password,email,name,skill_level,skills,role) VALUES('123123adsadasd','admin123','password12asd3','email@gmasdail.com','john', 'junoir','python, js', 'being happy');"))
+            db_instance.session.commit()
             db_instance.session.close()
             dotenv.set_key(dotenv_file,"restart_db","0")
         except Exception as e:
-            print("unable to check", e)
+            print("An error occurred: ", e)
+
     db_instance.create_all()
