@@ -1,11 +1,5 @@
 .idea
 venv
-<<<<<<< HEAD
-.coverage
-__pycache__/
-*.pyc
-.env
-=======
 .env
 applications/__pycache__
 applications/model/__pycache__
@@ -13,4 +7,3 @@ applications/controllers/__pycache__
 applications/controllers/user/__pycache__
 applications/database/__pycache__
 .coverage
->>>>>>> get

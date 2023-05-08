@@ -17,13 +17,12 @@ def create_app(env=None):
     else:
         app.config["TESTING"] = False
         app.config["DEBUG"] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DB_URL')
         
         url = os.getenv("DB_URL")
         if 'postgresql' not in url:
             update_url = url.replace("postgres","postgresql")
 
-        # app.config['SQLALCHEMY_DATABASE_URI'] = update_url or url
+        app.config['SQLALCHEMY_DATABASE_URI'] = update_url or url
         app.config["SECRET_KEY"] = "pass"
 
     # Initializing database

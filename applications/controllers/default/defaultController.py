@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask_restx import Namespace, Resource
 import json
 api = Namespace('Default', description='/default to get json of all required')
-db = db.instance
+db = database_service.instance
 
 @api.route('/')
 @api.produces('application/json')
