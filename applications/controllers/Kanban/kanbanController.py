@@ -1,12 +1,14 @@
 from applications import  create_app
 from applications.database import database_service
 from applications.model.model import Kanban_board,Creation_event, Kanban_task
-from flask import request, jsonify
+from flask import request, jsonify , make_response
 from flask_restx import Namespace, Resource
 import json
 
 api = Namespace('Kanban', description='Kanban operations')
 db = database_service.instance
+
+
 
 @api.route('/<int:id>')
 @api.produces('application/json')
@@ -114,10 +116,11 @@ class Task (Resource):
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
             send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
             serialized_send_list = json.dumps(send_list)
-            return jsonify({"All tasks":serialized_send_list}), 200
+            return {"All tasks":serialized_send_list}, 200
+
 
         except Exception as e:
-            return {"message" :  str(e)}, 400
+            return {"message" :  str(e)}, 404
         finally:
             db.session.close()
             
@@ -135,6 +138,7 @@ class Task (Resource):
             new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
             db.session.add(new_Task)
             db.session.commit()
+            print("Yes?",new_Task.id)
             return {"task_id" : new_Task.id }, 200
         except Exception as e:
             print(str(e))
@@ -147,16 +151,15 @@ class Task (Resource):
             name = info.get("name")
             categories = info.get("category")
             objective = info.get("objective")
-            complete = info.get("complete")
+            complete_str = info.get("complete")
             kanban_task_id = id
 
-            if not all ([name,categories,objective,kanban_task_id,complete]):
+            if not all ([name,categories,objective,kanban_task_id,complete_str]):
                 raise ValueError ("Missing Field")
-          
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
-
+            complete = (lambda a,b,c :a if (c == "true") else b )(True,False,complete_str)
             kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective,complete
             db.session.commit()
 

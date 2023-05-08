@@ -1,8 +1,11 @@
 def init_model(db_instance):
     import os
     from sqlalchemy import text
+    import dotenv
     from .model import user_account, Kanban_board, Kanban_task, \
         Calendar, Calendar_task, Creation_event, Project, Announcement, ProjectMember
+    dotenv_file = dotenv.find_dotenv()
+    dotenv.load_dotenv(dotenv_file)
     print(os.getenv("restart_db"))
     if (os.getenv("restart_db") == "1"):
         try:

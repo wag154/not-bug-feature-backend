@@ -67,7 +67,6 @@ class project(Resource):
             description = info.get("description")
             tech_stack = info.get("tech_stack")
             positions = info.get("positions")
-            user_id = info.get("user_id")
             duration = info.get("duration")
             num_of_collaborators = info.get("number_of_collaborators")
 

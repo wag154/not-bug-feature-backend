@@ -45,7 +45,69 @@ class TestAuth(TestCase):
 
         resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
         assert resp.status_code == 201
+    def test_calendar_create(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
 
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+    def test_calendar_delete(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.delete(f"{self.ROOT_URI}/calendar/1",headers= headers)
+        assert resp3.status_code == 200
+
+    def test_create_calendar_task (self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        task = json.dumps({
+            "due_date" : "2023-05-08 13:26:14.874024"
+        })
     def test_get_project(self):
         """GIVEN project WHEN trying to get project information THEN information is returned."""
 
@@ -308,8 +370,8 @@ class TestAuth(TestCase):
             "category": "hello world",
             "complete" : "false"
         }
-        resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp2.status_code == 201
+        resp2 = self.client.post(f"{self.ROOT_URI}/kanban/task/1", json=task_payload, headers=headers)
+        assert resp2.status_code == 200
 
         # Getting kanban tasks.
         resp3 = self.client.get(f"{self.ROOT_URI}/kanban/task/1")
@@ -412,7 +474,7 @@ class TestAuth(TestCase):
             "complete" : "false"
         })
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp.status_code == 200
+        assert resp2.status_code == 200
 
         # Updating task.
         put_payload = json.dumps({
