@@ -6,6 +6,7 @@ class user_account(db.Model):
     __tablename__ = "user_account"
     id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), unique=True)
+    chat_uid = db.Column(db.String(255), nullable=True, default="")
     username = db.Column(db.String(100), nullable=False, unique=True)
     password = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(255), nullable=False, unique=True)
