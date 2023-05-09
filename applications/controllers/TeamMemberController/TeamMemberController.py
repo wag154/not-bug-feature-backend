@@ -7,6 +7,16 @@ from flask_restx import Namespace, Resource
 api = Namespace('TeamMember', description='TeamMember operations')
 db = database_service.instance
 
+@api.route('/getProjectMemberByUsername/<string:username>')
+@api.produces("application/json")
+class projectMember(Resource):
+    def get (self, username):
+        try:
+            get_all = ProjectMember.query.filter_by(name=username).all()
+            send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
+            return send_list,200
+        except Exception as e:
+            return {"message" : str(e)}, 200
 @api.route("/increase_level/<int:id>")
 @api.produces('application/json')
 class IncreaseMemberLevel(Resource):
