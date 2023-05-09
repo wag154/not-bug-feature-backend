@@ -13,10 +13,12 @@ class projectMember(Resource):
     def get (self, username):
         try:
             get_all = ProjectMember.query.filter_by(name=username).all()
+            if not get_all:
+                return {"message" : "No member found with the given username"}, 404
             send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
             return send_list,200
         except Exception as e:
-            return {"message" : str(e)}, 200
+            return {"message" : str(e)}, 404
 @api.route("/increase_level/<int:id>")
 @api.produces('application/json')
 class IncreaseMemberLevel(Resource):
