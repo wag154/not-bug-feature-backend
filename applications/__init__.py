@@ -18,6 +18,7 @@ def create_app(env=None):
         app.config["TESTING"] = False
         app.config["DEBUG"] = True
         
+        update_url = ''
         url = os.getenv("DB_URL")
         if 'postgresql' not in url:
             update_url = url.replace("postgres","postgresql")
