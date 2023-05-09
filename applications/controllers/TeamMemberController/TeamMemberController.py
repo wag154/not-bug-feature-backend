@@ -18,7 +18,7 @@ class projectMember(Resource):
             send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
             return send_list,200
         except Exception as e:
-            return {"message" : str(e)}, 404
+            return {"message" : str(e)}, 400
 @api.route("/increase_level/<int:id>")
 @api.produces('application/json')
 class IncreaseMemberLevel(Resource):
