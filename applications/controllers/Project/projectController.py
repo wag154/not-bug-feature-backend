@@ -13,7 +13,6 @@ class project(Resource):
     def get (self,id):
         try:
             get_all_for_user = Project.query.filter_by(user_id = id).all()
-            print(get_all_for_user)
             if not get_all_for_user:
                 raise ValueError("This User Current Has No Projects!")
             
@@ -53,11 +52,9 @@ class project(Resource):
     
         except ValueError as e:
           return {"message": str(e)}, 400
-
         except Exception as e:
            db.session.rollback()
            return {"message": str(e)}, 500
-
         finally:
              db.session.close()
     def put(self,id):
@@ -67,6 +64,7 @@ class project(Resource):
             description = info.get("description")
             tech_stack = info.get("tech_stack")
             positions = info.get("positions")
+            user_id = info.get("user_id")
             duration = info.get("duration")
             num_of_collaborators = info.get("number_of_collaborators")
 

@@ -17,8 +17,10 @@ class Kanban (Resource):
         try :
             project_id = id
             get_kanban_id = [id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            if  len(get_kanban_id) == 0 :
+                raise ValueError("Cannot find")
             kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
-            return {"name":kanban.name, "categories" : kanban.categories},200  
+            return {"ID" : kanban.id},200  
             
         except Exception as e:
             return {"message" :  str(e)} ,400
@@ -115,8 +117,7 @@ class Task (Resource):
             kanban_id = id
             all_tasks = Kanban_task.query.filter_by(kanban_id = kanban_id).all()
             send_list =[{"id" :task.id,"name" : task.name,"category":task.category,"objective":task.objective,"complete":task.complete} for task in all_tasks]
-            serialized_send_list = json.dumps(send_list)
-            return {"All tasks":serialized_send_list}, 200
+            return send_list, 200
 
 
         except Exception as e:
@@ -127,13 +128,17 @@ class Task (Resource):
     def post(self, id):
         try:
             info = request.json
+            required_fields = ["name", "category", "objective", "complete"]
             name = info.get("name")
             category = info.get("category")
             objective = info.get("objective")
             complete = info.get("complete")
             kanban_id = id
-            if not all ([name,category,objective,kanban_id,complete]):
-                raise ValueError("missing field")
+        
+            missing_fields = [field for field in required_fields if field not in info]
+
+            if missing_fields:
+               raise ValueError("Missing fields: {}".format(", ".join(missing_fields)))            
             complete_return = (lambda a,b,c :a if (c == "true") else b )(True,False,complete)
             new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
             db.session.add(new_Task)
@@ -148,14 +153,17 @@ class Task (Resource):
     def put(self,id):
        try :
             info = request.json
+            required_fields = ["name", "category", "objective", "complete"]
             name = info.get("name")
             categories = info.get("category")
             objective = info.get("objective")
             complete_str = info.get("complete")
             kanban_task_id = id
 
-            if not all ([name,categories,objective,kanban_task_id,complete_str]):
-                raise ValueError ("Missing Field")
+            missing_fields = [field for field in required_fields if field not in info]
+
+            if missing_fields:
+               raise ValueError("Missing fields: {}".format(", ".join(missing_fields))) 
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
