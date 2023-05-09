@@ -20,14 +20,335 @@ class TestAuth(TestCase):
     def test_default(self):
         resp = self.client.get(f"/")
         assert resp.status_code == 200
+        
+    def test_project_delete(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
 
-    # def test_increase_level(self):
-    #     payload = {
-    #         "name": "hallo"
-    #     }
-    #     resp = self.client.post('/add', payload)
-    #     data = resp.data.decode('utf-8')
-#
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        resp2 = self.client.delete(f"{self.ROOT_URI}/project/1",headers = headers)
+        assert resp2.status_code == 200
+
+    def test_failed_create_project(self):
+        payload = json.dumps({
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+        resp  = self.client.post(f"{self.ROOT_URI}/project/1",data = payload, headers = headers )
+        assert resp.status_code == 400
+
+    def test_delete_team_member(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200 
+    def test_increase_level(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.put(f"{self.ROOT_URI}/teammember/level_increase/1",data = {"level" : "very good"}, headers = headers)
+        assert resp3.status_code == 200
+
+    def test_update_team_member(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200
+
+        update_member = json.dumps({
+            "name" :"update test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp3 = self.client.put(f"{self.ROOT_URI}/teammember/1", data = update_member, headers = headers)
+        assert resp3.status_code == 200
+
+    def test_get_kanban(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+        
+        resp2 = self.client.post(f"{self.ROOT_URI}/kanban/1", headers=headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.get(f"{self.ROOT_URI}/kanban/1",headers=headers)
+        assert resp3.status_code == 200
+
+    def test_new_team_member(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200
+
+    def test_get_teammember(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+         
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.get(f"{self.ROOT_URI}/teammember/1",headers=headers)
+        assert resp3.status_code == 200
+
+
+    def test_increase_level (self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+    
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        projectMember = json.dumps({
+            "name" :"test",
+            "level"  :"master",
+            "role" : "backend",
+            "user_id" : "1"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/teammember/1", data = projectMember, headers = headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.put(f"/teammember/increase_level/1",data = {"level" : "test"},headers= headers)
+        assert resp3.status_code == 200
+
+    def test_announcement_create(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        create_new = json.dumps({
+            "username" : "bobby123",
+            "title" : "what!",
+            "message" : "this cannot be true!",
+            "pinned" : "false"
+        })
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/announcement/1",data= create_new,headers = headers)
+        assert resp2.status_code == 200
+
+    def test_announcement_edit(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        create_new = json.dumps({
+            "username" : "bobby123",
+            "title" : "what!",
+            "message" : "this cannot be true!",
+            "pinned" : "false"
+        })
+        resp2 = self.client.post(f"{self.ROOT_URI}/announcement/1",data= create_new,headers = headers)
+        assert resp2.status_code == 200
+
+        update = json.dumps({
+            "username" : "hello",
+            "title" : "cant be!",
+            "message" : "wow!",
+            "pinned" : "true"
+        })
+        resp3 = self.client.put(f"{self.ROOT_URI}/announcement/1",data = update, headers= headers)
+        assert resp3.status_code == 200
+        
+    def test_announcement_delete(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+
+        headers = {'Content-Type': 'application/json'}
+
+        resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp.status_code == 201
+
+        create_new = json.dumps({
+            "username" : "bobby123",
+            "title" : "what!",
+            "message" : "this cannot be true!",
+            "pinned" : "false"
+        })
+        resp2 = self.client.post(f"{self.ROOT_URI}/announcement/1",data= create_new,headers = headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.delete(f"{self.ROOT_URI}/announcement/1",headers=headers)
+        assert resp3.status_code == 200
+
     def test_create_project(self):
         """GIVEN no projects WHEN trying to create new project THEN returns 201."""
         payload = json.dumps({
@@ -45,6 +366,163 @@ class TestAuth(TestCase):
 
         resp = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
         assert resp.status_code == 201
+
+    def test_calendar_create(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+    def test_calendar_delete(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.delete(f"{self.ROOT_URI}/calendar/1",headers= headers)
+        assert resp3.status_code == 200
+
+    def test_create_calendar_task (self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        task = json.dumps({
+            "name": "john",
+            "complete": "false",
+            "due_date" : "2023-05-08 13:26:14.874024"
+        })
+        resp3 = self.client.post(f"{self.ROOT_URI}/calendar/task/1",data = task, headers = headers)
+        assert resp3.status_code == 200
+
+    def test_edit_calendar_task(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        task = json.dumps({
+            "name": "john",
+            "complete": "false",
+            "due_date" : "2023-05-08 13:26:14"
+        })
+        resp3 = self.client.post(f"{self.ROOT_URI}/calendar/task/1",data = task, headers = headers)
+        assert resp3.status_code == 200
+
+        new_task = json.dumps({
+            "name" : "josh",
+            "complete" : "true",
+            "due_date" : "2023-05-08 13:26:14"
+        })
+        resp4 = self.client.put(f"{self.ROOT_URI}/calendar/task/1",data=new_task,headers=headers)
+        assert resp4.status_code == 200
+    
+    def test_delete_calendar(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        resp3 = self.client.delete(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp3.status_code == 200
+
+    def test_delete_task_cal(self):
+        payload = json.dumps({
+            "title": "best project",
+            "description": "unequaled on earth!",
+            "tech_stack": "yes",
+            "positions": "frontend,backend",
+            "user_id": "1",
+            "duration": "7",
+            "chatroom_key": "this-will-be-a-chatroom-key",
+            "number_of_collaborators": "0"
+        })
+        headers = {'Content-Type': 'application/json'}
+
+        resp1 = self.client.post(f"{self.ROOT_URI}/project/1", data=payload, headers=headers)
+        assert resp1.status_code == 201
+
+        resp2 = self.client.post(f"{self.ROOT_URI}/calendar/1",headers=headers)
+        assert resp2.status_code == 200
+
+        task = json.dumps({
+            "name": "john",
+            "complete": "false",
+            "due_date" : "2023-05-08 13:26:14"
+        })
+        resp3 = self.client.post(f"{self.ROOT_URI}/calendar/task/1",data = task, headers = headers)
+        assert resp3.status_code == 200
+
+        resp4 = self.client.delete(f"{self.ROOT_URI}/calendar/task/1",headers = headers)
+        assert resp4.status_code == 201
+
+
 
     def test_get_project(self):
         """GIVEN project WHEN trying to get project information THEN information is returned."""
@@ -308,8 +786,8 @@ class TestAuth(TestCase):
             "category": "hello world",
             "complete" : "false"
         }
-        resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp2.status_code == 201
+        resp2 = self.client.post(f"{self.ROOT_URI}/kanban/task/1", json=task_payload, headers=headers)
+        assert resp2.status_code == 200
 
         # Getting kanban tasks.
         resp3 = self.client.get(f"{self.ROOT_URI}/kanban/task/1")
@@ -412,7 +890,7 @@ class TestAuth(TestCase):
             "complete" : "false"
         })
         resp2 = self.client.post("/kanban/task/1", data=task_payload, headers=headers)
-        assert resp.status_code == 200
+        assert resp2.status_code == 200
 
         # Updating task.
         put_payload = json.dumps({
@@ -424,7 +902,6 @@ class TestAuth(TestCase):
 
         resp3 = self.client.put("/kanban/task/1", data=put_payload, headers=headers)
         assert resp3.status_code == 200
-
     def test_edit_kanban (self):
         """GIVEN user, project and kanban WHEN updating kanban THEN returns 200."""
 
@@ -467,6 +944,7 @@ class TestAuth(TestCase):
             "name": "Yes",
             "categories": "goodbye world,hello world"
         })
+
         resp2 = self.client.put(f"{self.ROOT_URI}/kanban/1", data=put_payload, headers=headers)
         assert resp2.status_code == 200
 #

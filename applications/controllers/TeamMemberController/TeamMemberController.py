@@ -33,10 +33,11 @@ class IncreaseMemberLevel(Resource):
 class TeamMember(Resource):
     def get (self,id): 
         try:
+            print("resp here!?!?!")
             project_id = id
             get_all = ProjectMember.query.filter_by(project_id = project_id).all()
             send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
-            return {"All tasks" : f"{send_list}"},200
+            return send_list,200
         except Exception as e:
             return {"message": str(e)},400
     def post (self,id):

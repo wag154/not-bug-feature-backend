@@ -19,9 +19,10 @@ def create_app(env=None):
         app.config["DEBUG"] = True
         
         url = os.getenv("DB_URL")
+        
         if 'postgresql' not in url:
             update_url = url.replace("postgres","postgresql")
-
+        
         app.config['SQLALCHEMY_DATABASE_URI'] = update_url or url
         app.config["SECRET_KEY"] = "pass"
 
