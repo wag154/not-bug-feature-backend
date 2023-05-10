@@ -6,6 +6,18 @@ from flask_restx import Namespace, Resource
 
 api = Namespace('Project', description='Project operations')
 db = database_service.instance
+@api.route('/')
+class projects(Resource):
+    def get(self):
+        try:
+            get_all = Project.query.all()
+            return_list = [i.to_dict() for i in get_all]
+            if len(get_all) == 0:
+                raise ValueError("No Projects")
+            return return_list,200
+        
+        except Exception as e:
+            return {"message" : str(e)}
 
 @api.route('/<int:id>')
 @api.produces('application/json')
