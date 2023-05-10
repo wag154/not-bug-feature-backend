@@ -58,8 +58,13 @@ class create_Project(Resource):
             new_member = ProjectMember(name = name,level = level, role = role, user_id = user_id,project_id = project.id)
             db.session.add(new_member)
             db.session.commit()
+            new_calendar = Calendar()
+            db.session.add(new_calendar)
+            db.session.commit()
             new_creation_event = Creation_event(project_id = project.id,project_member_id = new_member.id)
+            another_creation_event = Creation_event(project_id = project.id,calendar_id = new_calendar.id)
             db.session.add(new_creation_event)
+            db.session.add(another_creation_event)
             db.session.commit()
             return {"success": "yay"}, 200
         except Exception as e :
