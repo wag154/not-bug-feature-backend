@@ -18,6 +18,52 @@ class projects(Resource):
         
         except Exception as e:
             return {"message" : str(e)}
+@api.route("/create")
+@api.produces('application/json')
+class create_Project(Resource):
+    def post(self):
+        try:
+
+            info = request.json
+            title = info.get("title")
+            description = info.get("description")
+            tech_stack = info.get("tech_stack")
+            positions = info.get("positions")
+            user_id = info.get("user_id")
+            duration = info.get("duration")
+            chatroom_key = info.get("chatroom_key")
+            num_of_collaborators = info.get("number_of_collaborators")
+            name = info.get("name")
+            level = info.get("level")
+            role = info.get("role")
+
+            check_user = Project.query.filter_by(user_id = user_id).all()
+
+            if (check_user):
+                raise ValueError ("User Already Has")
+
+            project = Project(
+                title=title,
+                description=description,
+                tech_stack=tech_stack,
+                positions=positions,
+                user_id=user_id,
+                duration=duration,
+                number_of_collaborators=int(num_of_collaborators),
+                chatroom_key = chatroom_key
+            )
+            db.session.add(project)
+            db.session.commit()
+
+            new_member = ProjectMember(name = name,level = level, role = role, user_id = user_id,project_id = project.id)
+            db.session.add(new_member)
+            db.session.commit()
+            new_creation_event = Creation_event(project_id = project.id,project_member_id = new_member.id)
+            db.session.add(new_creation_event)
+            db.session.commit()
+            return {"success": "yay"}, 200
+        except Exception as e :
+            return {"message": str(e)}
 
 @api.route('/<int:id>')
 @api.produces('application/json')
@@ -48,8 +94,7 @@ class project(Resource):
                 raise ValueError("Missing fields")
 
             check_user = Project.query.filter_by(user_id = user_id).all()
-            
-            print(check_user)
+
             if (check_user):
                 raise ValueError ("User Already Has")
 
