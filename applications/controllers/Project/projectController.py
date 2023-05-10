@@ -46,7 +46,12 @@ class project(Resource):
 
             if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators,chatroom_key]):
                 raise ValueError("Missing fields")
-        
+
+            check_user = Project.query.filter_by(user_id = user_id).all()
+            print(check_user)
+            if (check_user):
+                raise ValueError ("User Already Has")
+
             project = Project(
                 title=title,
                 description=description,

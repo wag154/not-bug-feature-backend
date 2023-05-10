@@ -46,8 +46,6 @@ class Calendars (Resource):
            db.session.close()
     def delete(self,id):
         try:
-
-
             cal = Calendar.query.filter_by(id = id).first()
             all_tasks = Calendar_task.query.filter_by(calendar_id = cal.id).all()
             for i in all_tasks:
@@ -78,30 +76,34 @@ class Calendar_Task(Resource):
                      "name": task.name,
                      "calendar_id": task.calendar_id,
                      "complete": task.complete,
-                     "due_date": task.due_date.strftime('%Y-%m-%d %H:%M:%S')
+                     "start_date": task.start_date.strftime('%Y-%m-%d'),
+                     "due_date": task.due_date.strftime('%Y-%m-%d')
                     }
                     for task in all_tasks
                   ] 
 
-            serialised_send_list = json.dumps(send_list)
-            return jsonify({"All Tasks":serialised_send_list}),200
+            return send_list,200
 
         except Exception as e:
             return {"message" : str(e)}
+        
     def post (self,id):
         try:
             info = request.json
             name = info.get("name")
             complete_str = info.get("complete")
             due_date_str = info.get("due_date")
+            start_date_str = info.get("start_date")
+
             calendar_id = id 
-            if not all ([name,due_date_str,calendar_id,complete_str]):
+            if not all ([name, start_date_str, due_date_str, calendar_id, complete_str]):
                 raise ValueError("Missing Field, either misspelt or other")
             complete = (lambda a,b,c :a if (c == "true") else b )(True,False,complete_str)
-            without = due_date_str.split(".")[0]
-            due_date = datetime.strptime(without, '%Y-%m-%d %H:%M:%S')
 
-            new_task = Calendar_task(complete = complete, name = name,due_date = due_date,calendar_id = calendar_id)
+            start_date = self._extract_date(info, "start_date")
+            due_date = self._extract_date(info, "due_date")
+
+            new_task = Calendar_task(complete=complete, name=name, start_date=start_date, due_date=due_date,calendar_id=calendar_id)
             db.session.add(new_task)
             db.session.commit()
 
@@ -117,16 +119,19 @@ class Calendar_Task(Resource):
             name = info.get("name")
             complete_str = info.get("complete")
             due_date_str = info.get("due_date")
+            start_date_str = info.get("due_date")
 
             calendar_task_id = id
-            if not all ([name,due_date_str,calendar_task_id,complete_str]):
+            if not all ([name, start_date_str, due_date_str, calendar_task_id, complete_str]):
                 raise ValueError("Missing Field, either misspelt or other")
             complete = (lambda a,b,c :a if (c == "true") else b )(True,False,complete_str)
-            without = due_date_str.split(".")[0]
-            due_date = datetime.strptime(without, '%Y-%m-%d %H:%M:%S')
+
+            start_date = self._extract_date(info, "start_date")
+            due_date = self._extract_date(info, "due_date")
 
             update_task = Calendar_task.query.filter_by(id = id ).first()
             update_task.name = name
+            update_task.start_date = start_date
             update_task.due_date = due_date
             update_task.complete = complete
 
@@ -137,6 +142,7 @@ class Calendar_Task(Resource):
             return {"message":str(e)},400
         finally:
             db.session.close()
+
     def delete (self,id):
         try:
             task_id = id
@@ -148,3 +154,8 @@ class Calendar_Task(Resource):
             return {"message" : str(e)}
         finally:
             db.session.close()
+
+    def _extract_date(self, json_request, date_field) -> datetime:
+        raw_date = json_request.get(date_field)
+        without = raw_date.split(".")[0]
+        return datetime.strptime(without, '%Y-%m-%d')
