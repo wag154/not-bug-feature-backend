@@ -20,6 +20,7 @@ class Kanban (Resource):
             if  len(get_kanban_id) == 0 :
                 raise ValueError("Cannot find")
             kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
+            print(kanban)
             return {"ID" : kanban.id},200  
             
         except Exception as e:
