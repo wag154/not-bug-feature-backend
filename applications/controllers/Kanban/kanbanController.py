@@ -128,19 +128,17 @@ class Task (Resource):
     def post(self, id):
         try:
             info = request.json
-            required_fields = ["name", "category", "objective", "complete"]
+            required_fields = ["name", "category", "objective"]
             name = info.get("name")
             category = info.get("category")
             objective = info.get("objective")
-            complete = info.get("complete")
             kanban_id = id
         
             missing_fields = [field for field in required_fields if field not in info]
 
             if missing_fields:
                raise ValueError("Missing fields: {}".format(", ".join(missing_fields)))            
-            complete_return = (lambda a,b,c :a if (c == "true") else b )(True,False,complete)
-            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id,complete = complete_return)
+            new_Task = Kanban_task(name = name, category = category, objective = objective, kanban_id = kanban_id)
             db.session.add(new_Task)
             db.session.commit()
             print("Yes?",new_Task.id)
