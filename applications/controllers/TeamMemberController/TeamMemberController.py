@@ -70,7 +70,7 @@ class TeamMember(Resource):
             
             new_member = ProjectMember(name = name,level = level, role = role, user_id = user_id,project_id = project_id)
             checker = ProjectMember.query.filter_by(user_id = int(user_id),project_id= project_id).first()
-            if not checker:
+            if checker:
                 return {"Failed" : "user already is a member of this project!"}, 409
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
     
