@@ -61,6 +61,14 @@ class create_Project(Resource):
             new_calendar = Calendar()
             db.session.add(new_calendar)
             db.session.commit()
+
+            kanban = Kanban_board()
+            db.session.add(kanban)
+            db.session.commit()
+
+            create = Creation_event(kanban_id=kanban.id, project_id = project.id)
+            db.session.add(create)
+            db.session.commit()
             new_creation_event = Creation_event(project_id = project.id,project_member_id = new_member.id)
             another_creation_event = Creation_event(project_id = project.id,calendar_id = new_calendar.id)
             db.session.add(new_creation_event)
