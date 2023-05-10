@@ -166,7 +166,6 @@ class Task (Resource):
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
-            complete = (lambda a,b,c :a if (c == "true") else b )(True,False)
             kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective
             db.session.commit()
 
