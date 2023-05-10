@@ -61,11 +61,9 @@ class create_Project(Resource):
             new_calendar = Calendar()
             db.session.add(new_calendar)
             db.session.commit()
-
             kanban = Kanban_board()
             db.session.add(kanban)
             db.session.commit()
-
             create = Creation_event(kanban_id=kanban.id, project_id = project.id)
             db.session.add(create)
             db.session.commit()
@@ -74,7 +72,7 @@ class create_Project(Resource):
             db.session.add(new_creation_event)
             db.session.add(another_creation_event)
             db.session.commit()
-            return {"success": "yay"}, 200
+            return {'project_id':project.id}, 200
         except Exception as e :
             return {"message": str(e)}
 

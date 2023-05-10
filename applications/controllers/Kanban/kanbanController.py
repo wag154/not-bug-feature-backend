@@ -16,11 +16,15 @@ class Kanban (Resource):
     def get (self,id):
         try :
             project_id = id
-            get_kanban_id = [id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            get_kanban_id = [ce for ce in Creation_event.query.filter_by(project_id=project_id)]
             if  len(get_kanban_id) == 0 :
                 raise ValueError("Cannot find")
-            kanban = Kanban_board.query.filter_by(id = get_kanban_id[0]).first()
-            return {"ID" : kanban.id},200  
+            for i in get_kanban_id:
+                if i.kanban_id:
+                    kanban = Kanban_board.query.filter_by(id = i.kanban_id).first()
+                    print(kanban)
+                    return {"ID" : kanban.id},200  
+            return {"message" : "no kanban"}
             
         except Exception as e:
             return {"message" :  str(e)} ,400
