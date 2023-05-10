@@ -6,6 +6,18 @@ from flask_restx import Namespace, Resource
 
 api = Namespace('Project', description='Project operations')
 db = database_service.instance
+@api.route('/')
+class projects(Resource):
+    def get(self):
+        try:
+            get_all = Project.query.all()
+            return_list = [i.to_dict() for i in get_all]
+            if len(get_all) == 0:
+                raise ValueError("No Projects")
+            return return_list,200
+        
+        except Exception as e:
+            return {"message" : str(e)}
 
 @api.route('/<int:id>')
 @api.produces('application/json')
@@ -34,7 +46,13 @@ class project(Resource):
 
             if not all([title, description, tech_stack, positions, user_id, duration, num_of_collaborators,chatroom_key]):
                 raise ValueError("Missing fields")
-        
+
+            check_user = Project.query.filter_by(user_id = user_id).all()
+            
+            print(check_user)
+            if (check_user):
+                raise ValueError ("User Already Has")
+
             project = Project(
                 title=title,
                 description=description,

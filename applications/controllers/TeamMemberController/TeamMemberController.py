@@ -45,7 +45,6 @@ class IncreaseMemberLevel(Resource):
 class TeamMember(Resource):
     def get (self,id): 
         try:
-            print("resp here!?!?!")
             project_id = id
             get_all = ProjectMember.query.filter_by(project_id = project_id).all()
             send_list = [{"id" : member.id, "name" :member.name, "level" : member.level, "role": member.role, "project_id" : member.project_id,"user_id" : member.user_id } for member in get_all]
@@ -54,6 +53,7 @@ class TeamMember(Resource):
             return {"message": str(e)},400
     def post (self,id):
         try:
+            required_fields = ["name", "level", "role", "user_id"]
             info = request.json
             name = info.get("name")
             level = info.get("level")
@@ -62,12 +62,15 @@ class TeamMember(Resource):
             project_id = id
             print(level,role,user_id,project_id,name)
 
-            if not all ([level,role,user_id,project_id,name]):
-                raise ValueError("Missing field")
+            missing_fields = [field for field in required_fields if field not in info]
+            print(missing_fields)
+            if  missing_fields:
+               raise ValueError("Missing fields: {}".format(", ".join(missing_fields)))  
+             
             
             new_member = ProjectMember(name = name,level = level, role = role, user_id = user_id,project_id = project_id)
             checker = ProjectMember.query.filter_by(user_id = int(user_id),project_id= project_id).first()
-            if checker:
+            if not checker:
                 return {"Failed" : "user already is a member of this project!"}, 409
             new_creation_event = Creation_event(project_id = project_id,project_member_id = new_member.id)
     

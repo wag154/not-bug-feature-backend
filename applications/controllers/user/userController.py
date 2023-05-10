@@ -66,7 +66,6 @@ class User(Resource):
         except exc.IntegrityError:
             return {"message": "Username or email already exist."}, 500
 
-
 @api.route('/<string:username>')
 class User(Resource):
     @auth_decorator
