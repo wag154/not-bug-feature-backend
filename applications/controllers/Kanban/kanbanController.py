@@ -16,7 +16,7 @@ class Kanban (Resource):
     def get (self,id):
         try :
             project_id = id
-            get_kanban_id = [id for ce in Creation_event.query.filter_by(project_id=project_id)]
+            get_kanban_id = [ce for ce in Creation_event.query.filter_by(project_id=project_id)]
             if  len(get_kanban_id) == 0 :
                 raise ValueError("Cannot find")
             for i in get_kanban_id:
