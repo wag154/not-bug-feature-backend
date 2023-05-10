@@ -101,6 +101,7 @@ class Calendar_task(db.Model):
     __tablename__ = "calendar_task"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30), nullable=False)
+    start_date = db.Column(db.DateTime(), default=datetime.utcnow)
     due_date = db.Column(db.DateTime(), default=datetime.utcnow)
     calendar_id = db.Column(db.Integer, db.ForeignKey('calendar.id'))
     complete = db.Column(db.Boolean,server_default ='t',default = False)
