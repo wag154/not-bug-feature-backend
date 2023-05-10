@@ -153,11 +153,10 @@ class Task (Resource):
     def put(self,id):
        try :
             info = request.json
-            required_fields = ["name", "category", "objective", "complete"]
+            required_fields = ["name", "category", "objective"]
             name = info.get("name")
             categories = info.get("category")
             objective = info.get("objective")
-            complete_str = info.get("complete")
             kanban_task_id = id
 
             missing_fields = [field for field in required_fields if field not in info]
@@ -167,8 +166,8 @@ class Task (Resource):
             kanban_task =Kanban_task.query.filter_by(id = kanban_task_id).first()
             if not kanban_task:
                 raise ValueError(f"Unable to get kanban task! task :{kanban_task}")
-            complete = (lambda a,b,c :a if (c == "true") else b )(True,False,complete_str)
-            kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective,complete
+            complete = (lambda a,b,c :a if (c == "true") else b )(True,False)
+            kanban_task.name,kanban_task.category,kanban_task.objective,kanban_task.complete = name ,categories,objective
             db.session.commit()
 
             return {"message": "success!"}, 200
