@@ -6,6 +6,18 @@ from flask_restx import Namespace, Resource
 
 api = Namespace('Project', description='Project operations')
 db = database_service.instance
+
+@api.route("/getbyid/<int:id>")
+class projectsbyid (Resource):
+    def get (self,id):
+        try:
+            
+            get_project = Project.query.filter_by(id = id).first()
+            print("here")
+            return get_project.to_dict()
+        except Exception as e:
+            return {"message", str(e)}
+        
 @api.route('/')
 class projects(Resource):
     def get(self):
